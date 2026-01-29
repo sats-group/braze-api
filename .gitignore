@@ -1,0 +1,9 @@
+[Bb]in/
+[Oo]bj/
+
+*sln.DotSettings.user
+
+.idea/
+.vscode/
+
+.DS_Store
