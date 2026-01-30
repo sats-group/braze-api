@@ -20,6 +20,7 @@ public class UserDataSerializationTests
                     Country = "NO",
                     DateOfBirth = new DateOnly(2000, 12, 10),
                     DateOfFirstSession = DateTimeOffset.Parse("2001-01-01T00:00:00Z"),
+                    Gender = Gender.PreferNotToSay,
                     CustomAttributes = new ()
                     {
                         { "yolo", new PropertyRequestModel.Literal() { Value = new PropertyLiteral.Integer() { Value = 42, } , }},
@@ -75,7 +76,8 @@ public class UserDataSerializationTests
                       "dob":"2000-12-10",
                       "yolo": 42,
                       "yolo2": 42.42,
-                      "yolo3": { "inc": 42 }
+                      "yolo3": { "inc": 42 },
+                      "gender": "P"
                     }
                   ],
                   "purchases": [

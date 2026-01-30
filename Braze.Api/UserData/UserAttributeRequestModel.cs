@@ -298,6 +298,7 @@ public class SubscriptionGroup
 /// <summary>
 /// The subscribe group state.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum SubscribeGroupState
 {
     /// <summary>
@@ -341,6 +342,7 @@ public class PushToken
 /// <summary>
 /// Gender enum.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Gender
 {
     /// <summary>
@@ -377,6 +379,7 @@ public enum Gender
 /// <summary>
 /// The subscribe state.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum SubscribeState
 {
     /// <summary>
