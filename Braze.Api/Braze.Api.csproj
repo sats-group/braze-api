@@ -3,8 +3,9 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CopyDocumentationFileToOutputDirectory>true</CopyDocumentationFileToOutputDirectory>
-    <PackageVersion>0.0.1-beta8</PackageVersion>
+    <PackageVersion>0.0.1-beta9</PackageVersion>
     <PackageId>Braze.Api</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>SATS Group developers</Authors>
     <Description>.NET bindings for the Braze API.</Description>
     <RepositoryUrl>https://github.com/sats-group/braze-api</RepositoryUrl>
@@ -12,9 +13,13 @@
     <PackageProjectUrl>https://github.com/sats-group/braze-api</PackageProjectUrl>
     <PackageTags>braze</PackageTags>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <InternalsVisibleTo Include="Braze.Api.Tests" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>

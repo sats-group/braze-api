@@ -1,4 +1,4 @@
-# dotnet client library for the Braze Rest Api
+# .NET client library for the Braze Rest Api
 
 NOTE: unoffical and not affiliated with Braze in any way.
 
@@ -17,8 +17,9 @@ Configuration (e.g. appsettings.json):
 ```cs
 
 service.AddBrazeApi();
-// service.AddBrazeApi(optionsKey: "BrazeCustomKey");
-
+// or as keyed services
+// service.AddBrazeApi("KEY-A", "Braze:A");
+// service.AddBrazeApi("KEY-B", "Braze:B");
 ```
 
 Client usage:
@@ -26,6 +27,14 @@ Client usage:
 ```cs
 
 var userDataClient = provider.GetRequiredService<IUserDataClient>();
+
+// or via IBrazeProviderFactory (usful for keyed services)
+// var factory = provider.GetRequiredService<IBrazeProviderFactory>();
+// var brazeProvider = factory.Get("KEY-A");
+// var userDataClient = brazeProvider.UserDataClient;
+
+// or directly via keyed services
+// var userDataClient = provider.GetRequiredKeyedService<IUserDataClient>("KEY-A");
 
 var track = new Track()
 {
