@@ -20,35 +20,35 @@ public abstract class Property
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The literal.</returns>
-    public static Property Create(string value) => new String() { Value = value };
+    public static Property Create(string? value) => new String() { Value = value };
 
     /// <summary>
     /// Creates an integer literal.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The literal.</returns>
-    public static Property Create(int value) => new Integer() { Value = value };
+    public static Property Create(int? value) => new Integer() { Value = value };
 
     /// <summary>
     /// Creates a bool literal.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The literal.</returns>
-    public static Property Create(bool value) => new Bool() { Value = value };
+    public static Property Create(bool? value) => new Bool() { Value = value };
 
     /// <summary>
     /// Creates a float literal.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The literal.</returns>
-    public static Property Create(double value) => new Float() { Value = value };
+    public static Property Create(double? value) => new Float() { Value = value };
 
     /// <summary>
     /// Creates a time literal.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The literal.</returns>
-    public static Property Create(DateTimeOffset value) => new Time() { Value = value };
+    public static Property Create(DateTimeOffset? value) => new Time() { Value = value };
 
     /// <summary>
     /// Creates an array literal.
@@ -65,6 +65,31 @@ public abstract class Property
     public static Property Create(Dictionary<string, Property> value) => new Object() { Value = value };
 
     /// <summary>
+    /// Implicit cast from nullable int to <see cref="Property"/>.
+    /// </summary>
+    public static implicit operator Property(int? value) => Create(value);
+
+    /// <summary>
+    /// Implicit cast from nullable double to <see cref="Property"/>.
+    /// </summary>
+    public static implicit operator Property(double? value) => Create(value);
+
+    /// <summary>
+    /// Implicit cast from nullable bool to <see cref="Property"/>.
+    /// </summary>
+    public static implicit operator Property(bool? value) => Create(value);
+
+    /// <summary>
+    /// Implicit cast from nullable string to <see cref="Property"/>.
+    /// </summary>
+    public static implicit operator Property(string? value) => Create(value);
+
+    /// <summary>
+    /// Implicit cast from nullable DateTimeOffset to <see cref="Property"/>.
+    /// </summary>
+    public static implicit operator Property(DateTimeOffset? value) => Create(value);
+
+    /// <summary>
     /// An integer literal.
     /// </summary>
     [JsonConverter(typeof(PropertyConverter))]
@@ -73,7 +98,7 @@ public abstract class Property
         /// <summary>
         /// The value.
         /// </summary>
-        public required int Value { get; init; }
+        public required int? Value { get; init; }
     }
 
     /// <summary>
@@ -85,7 +110,7 @@ public abstract class Property
         /// <summary>
         /// The value.
         /// </summary>
-        public required bool Value { get; init; }
+        public required bool? Value { get; init; }
     }
 
     /// <summary>
@@ -97,7 +122,7 @@ public abstract class Property
         /// <summary>
         /// The value.
         /// </summary>
-        public required double Value { get; init; }
+        public required double? Value { get; init; }
     }
 
     /// <summary>
@@ -109,7 +134,7 @@ public abstract class Property
         /// <summary>
         /// The value.
         /// </summary>
-        public required DateTimeOffset Value { get; init; }
+        public required DateTimeOffset? Value { get; init; }
     }
 
     /// <summary>
@@ -121,7 +146,7 @@ public abstract class Property
         /// <summary>
         /// The value.
         /// </summary>
-        public required string Value { get; init; }
+        public required string? Value { get; init; }
     }
 
     /// <summary>
@@ -165,19 +190,47 @@ internal class PropertyConverter : JsonConverter<Property>
         switch (value)
         {
             case Property.Float number:
-                writer.WriteNumberValue(number.Value);
+                if (number.Value.HasValue)
+                {
+                    writer.WriteNumberValue(number.Value.Value);
+                }
+                else
+                {
+                    writer.WriteNullValue();
+                }
                 break;
             case Property.Integer integer:
-                writer.WriteNumberValue(integer.Value);
+                if (integer.Value.HasValue)
+                {
+                    writer.WriteNumberValue(integer.Value.Value);
+                }
+                else
+                {
+                    writer.WriteNullValue();
+                }
                 break;
             case Property.Time time:
-                writer.WriteStringValue(time.Value);
+                if (time.Value.HasValue)
+                {
+                    writer.WriteStringValue(time.Value.Value);
+                }
+                else
+                {
+                    writer.WriteNullValue();
+                }
                 break;
             case Property.String str:
                 writer.WriteStringValue(str.Value);
                 break;
             case Property.Bool boolean:
-                writer.WriteBooleanValue(boolean.Value);
+                if (boolean.Value.HasValue)
+                {
+                    writer.WriteBooleanValue(boolean.Value.Value);
+                }
+                else
+                {
+                    writer.WriteNullValue();
+                }
                 break;
             case Property.Array arr:
                 writer.WriteStartArray();

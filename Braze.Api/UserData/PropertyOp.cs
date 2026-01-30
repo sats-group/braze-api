@@ -18,32 +18,58 @@ public abstract class PropertyOp
     /// <summary>
     /// Create a LiteralOp with the provided string value.
     /// </summary>
-    public static PropertyOp Literal(string value) =>
+    public static PropertyOp Literal(string? value) =>
         new LiteralOp { Value = Property.Create(value), };
 
     /// <summary>
     /// Create a LiteralOp with the provided int value.
     /// </summary>
-    public static PropertyOp Literal(int value) =>
+    public static PropertyOp Literal(int? value) =>
         new LiteralOp { Value = Property.Create(value), };
 
     /// <summary>
     /// Create a LiteralOp with the provided double value.
     /// </summary>
-    public static PropertyOp Literal(double value) =>
+    public static PropertyOp Literal(double? value) =>
         new LiteralOp { Value = Property.Create(value), };
 
     /// <summary>
     /// Create a LiteralOp with the provided bool value.
     /// </summary>
-    public static PropertyOp Literal(bool value) =>
+    public static PropertyOp Literal(bool? value) =>
         new LiteralOp { Value = Property.Create(value), };
 
     /// <summary>
     /// Create a LiteralOp with the provided int value.
     /// </summary>
-    public static PropertyOp Literal(DateTimeOffset value) =>
+    public static PropertyOp Literal(DateTimeOffset? value) =>
         new LiteralOp { Value = Property.Create(value), };
+
+    /// <summary>
+    /// Implicit cast from nullable int to <see cref="Property"/>.
+    /// </summary>
+    public static implicit operator PropertyOp(int? value) => Literal(value);
+
+    /// <summary>
+    /// Implicit cast from nullable double to <see cref="Property"/>.
+    /// </summary>
+    public static implicit operator PropertyOp(double? value) => Literal(value);
+
+    /// <summary>
+    /// Implicit cast from nullable bool to <see cref="Property"/>.
+    /// </summary>
+    public static implicit operator PropertyOp(bool? value) => Literal(value);
+
+    /// <summary>
+    /// Implicit cast from nullable string to <see cref="Property"/>.
+    /// </summary>
+    public static implicit operator PropertyOp(string? value) => Literal(value);
+
+    /// <summary>
+    /// Implicit cast from nullable DateTimeOffset to <see cref="Property"/>.
+    /// </summary>
+    public static implicit operator PropertyOp(DateTimeOffset? value) => Literal(value);
+
 
     /// <summary>
     /// A literal value.

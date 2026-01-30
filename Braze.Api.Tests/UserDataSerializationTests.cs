@@ -26,6 +26,7 @@ public class UserDataSerializationTests
                         { "yolo", PropertyOp.Literal(42) },
                         { "yolo2", PropertyOp.Literal(42.42) },
                         { "yolo3", new PropertyOp.IncrementInteger() { IncrementValue = 42, } },
+                        { "yolo5", (string?)null },
                     },
                 }
             ],
@@ -39,6 +40,7 @@ public class UserDataSerializationTests
                     Properties = new ()
                     {
                         { "thihi", Property.Create(DateTimeOffset.Parse("2004-01-01T00:00:00+00:00")) },
+                        { "foobar", 24.2 }
                     },
                 },
             ],
@@ -77,7 +79,8 @@ public class UserDataSerializationTests
                       "yolo": 42,
                       "yolo2": 42.42,
                       "yolo3": { "inc": 42 },
-                      "gender": "P"
+                      "gender": "P",
+                      "yolo5": null
                     }
                   ],
                   "purchases": [
@@ -97,7 +100,8 @@ public class UserDataSerializationTests
                       "time": "2003-01-01T00:00:00+00:00",
                       "email": "yolo@foobar.com",
                       "properties": {
-                        "thihi": "2004-01-01T00:00:00+00:00"
+                        "thihi": "2004-01-01T00:00:00+00:00",
+                        "foobar": 24.2
                       }
                     }
                   ]
