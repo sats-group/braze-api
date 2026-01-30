@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -18,18 +19,18 @@ public interface IUserDataClient
     /// <param name="trackRequest">The track request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The track response.</returns>
-    Task<ApiResponse<TrackResponseModel>> Track(Track trackRequest, CancellationToken cancellationToken = default);
+    Task<ApiResponse<TrackResponse>> Track(Track trackRequest, CancellationToken cancellationToken = default);
 }
 
 /// <inheritdoc/>
-public class UserDataClient(HttpClient httpClient) : IUserDataClient
+internal class UserDataClient(HttpClient httpClient) : IUserDataClient
 {
     /// <inheritdoc/>
-    public async Task<ApiResponse<TrackResponseModel>> Track(Track trackRequest, CancellationToken cancellationToken = default)
+    public async Task<ApiResponse<TrackResponse>> Track(Track trackRequest, CancellationToken cancellationToken = default)
     {
         var requestMessage = new HttpRequestMessage(
             HttpMethod.Post,
-            "user/track")
+            new Uri("users/track", UriKind.Relative))
         {
             Content = JsonContent.Create(trackRequest)
         };
@@ -53,7 +54,7 @@ public class UserDataClient(HttpClient httpClient) : IUserDataClient
         var responseContent = await responseMessage.Content.ReadFromJsonAsync<InternalTrackResponseModel>(cancellationToken)
                               ?? throw new BrazeApiException("Unable to deserialize the response.");
 
-        return new ApiResponse<TrackResponseModel>(new TrackResponseModel
+        return new ApiResponse<TrackResponse>(new TrackResponse
         {
             AttributesProcessed = responseContent.AttributesProcessed,
             EventsProcessed = responseContent.EventsProcessed,
@@ -92,13 +93,13 @@ public class UserDataClient(HttpClient httpClient) : IUserDataClient
     private class InternalTrackResponseModel : ApiResponseModel
     {
         [JsonPropertyName("attributes_processed")]
-        public required int? AttributesProcessed { get; init; }
+        public int? AttributesProcessed { get; init; }
 
         [JsonPropertyName("events_processed")]
-        public required int? EventsProcessed { get; init; }
+        public int? EventsProcessed { get; init; }
 
         [JsonPropertyName("purchases_processed")]
-        public required int? PurchasesProcessed { get; init; }
+        public int? PurchasesProcessed { get; init; }
     }
 }
 
@@ -132,7 +133,7 @@ public class Track
 /// <summary>
 /// The track response.
 /// </summary>
-public class TrackResponseModel
+public class TrackResponse
 {
     /// <summary>
     /// If attributes are included in the request, this returns an integer of the number of external_ids with attributes that Braze queued for processing.

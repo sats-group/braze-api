@@ -3,7 +3,7 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CopyDocumentationFileToOutputDirectory>true</CopyDocumentationFileToOutputDirectory>
-    <PackageVersion>0.0.1-beta2</PackageVersion>
+    <PackageVersion>0.0.1-beta4</PackageVersion>
     <PackageId>Braze.Api</PackageId>
     <Authors>SATS Group developers</Authors>
     <Description>.NET bindings for the Braze API.</Description>

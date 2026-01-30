@@ -40,7 +40,7 @@ public static class BrazeConfiguration
     public static IServiceCollection AddBrazeApi(this IServiceCollection services, string optionsKey = "Braze")
     {
         services
-            .AddOptions<BrazeOptions>()
+            .AddOptions<BrazeOptions>(optionsKey)
             .Configure<IConfiguration>((obj, config) =>
                 config.GetSection(optionsKey).Bind(obj))
             .ValidateOnStart();
