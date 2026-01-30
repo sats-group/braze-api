@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <IsPackable>false</IsPackable>
+      <IsPackable>false</IsPackable>
+      <NoWarn>$(NoWarn);IDE0005;</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CopyDocumentationFileToOutputDirectory>true</CopyDocumentationFileToOutputDirectory>
     <PackageVersion>0.0.1-beta1</PackageVersion>
     <PackageId>Braze.Api</PackageId>
     <Authors>SATS Group developers</Authors>
     <Description>.NET bindings for the Braze API.</Description>
     <RepositoryUrl>https://github.com/sats-group/braze-api</RepositoryUrl>
-    <PackageLicenseExpression>MIT or Apache-2.0;</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT OR Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sats-group/braze-api</PackageProjectUrl>
     <PackageTags>braze</PackageTags>
   </PropertyGroup>
