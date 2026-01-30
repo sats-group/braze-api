@@ -4,14 +4,30 @@ NOTE: unoffical and not affiliated with Braze in any way.
 
 ## Usage
 
+Configuration (e.g. appsettings.json):
+```json
+{
+  "Braze": {
+    "BaseAddress": "https://rest.fra-02.braze.eu",
+    "ApiKey": "<SECRET KEY>"
+  }
+}
+```
+
 ```cs
 
 service.AddBrazeApi();
+// service.AddBrazeApi(optionsKey: "BrazeCustomKey");
 
+```
+
+Client usage:
+
+```cs
 
 var userDataClient = provider.GetRequiredService<IUserDataClient>();
 
-var trackRequestModel = new TrackRequestModel()
+var track = new Track()
 {
     Attributes =
     [
@@ -24,9 +40,9 @@ var trackRequestModel = new TrackRequestModel()
             Gender = Gender.PreferNotToSay,
             CustomAttributes = new ()
             {
-                { "yolo", new PropertyRequestModel.Literal() { Value = new PropertyLiteral.Integer() { Value = 42, } , }},
-                { "yolo2", new PropertyRequestModel.Literal() { Value = new PropertyLiteral.Float() { Value = 42.42, } , }},
-                { "yolo3", new PropertyRequestModel.IncrementInteger() { IncrementValue = 42, } },
+                { "yolo", PropertyOp.Literal(42) },
+                { "yolo2", PropertyOp.Literal(42.42) },
+                { "yolo3", new PropertyOp.IncrementInteger() { IncrementValue = 42, } },
             },
         }
     ],
@@ -39,7 +55,7 @@ var trackRequestModel = new TrackRequestModel()
             Email = "yolo@foobar.com",
             Properties = new ()
             {
-                { "thihi", PropertyLiteral.Create(DateTimeOffset.Parse("2004-01-01T00:00:00+00:00")) },
+                { "thihi", Property.Create(DateTimeOffset.Parse("2004-01-01T00:00:00+00:00")) },
             },
         },
     ],
@@ -53,13 +69,11 @@ var trackRequestModel = new TrackRequestModel()
             Time = DateTimeOffset.Parse("2002-01-01T00:00:00+00:00"),
             Properties = new ()
             {
-                { "foobar", PropertyLiteral.Create("FOOBAR") }
+                { "foobar", Property.Create("FOOBAR") }
             },
         },
     ]
 };
 
-await userDataClient.Track(trackRequestModel, CancellationToken.None);
-
-
+await userDataClient.Track(track, CancellationToken.None);
 ```

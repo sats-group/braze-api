@@ -5,9 +5,9 @@ using System.Text.Json.Serialization;
 namespace Braze.Api.UserData;
 
 /// <summary>
-/// The purchase request model.
+/// The event request model.
 /// </summary>
-public class PurchaseRequestModel : BrazeUserIdentifierRequestModel
+public class Event : BrazeUserIdentifier
 {
     /// <summary>
     /// The app Id.
@@ -17,31 +17,10 @@ public class PurchaseRequestModel : BrazeUserIdentifierRequestModel
     public string? AppId { get; init; }
 
     /// <summary>
-    /// The product Id.
+    /// The name.
     /// </summary>
-    [JsonPropertyName("product_id")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public required string ProductId { get; init; }
-
-    /// <summary>
-    /// The currency.
-    /// </summary>
-    [JsonPropertyName("currency")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public required string Currency { get; init; }
-
-    /// <summary>
-    /// The price.
-    /// </summary>
-    [JsonPropertyName("price")]
-    public required decimal Price { get; init; }
-
-    /// <summary>
-    /// The quantity.
-    /// </summary>
-    [JsonPropertyName("quantity")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? Quantity { get; init; }
+    [JsonPropertyName("name")]
+    public required string Name { get; init; }
 
     /// <summary>
     /// The time.
@@ -54,7 +33,7 @@ public class PurchaseRequestModel : BrazeUserIdentifierRequestModel
     /// </summary>
     [JsonPropertyName("properties")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Dictionary<string, PropertyLiteral>? Properties { get; init; }
+    public Dictionary<string, Property>? Properties { get; init; }
 
     /// <summary>
     /// If you have a user profile with a different external_id than the one in this request, you can use this to update the existing user profile.

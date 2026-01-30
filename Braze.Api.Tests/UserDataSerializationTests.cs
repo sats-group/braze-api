@@ -10,7 +10,7 @@ public class UserDataSerializationTests
     [Fact]
     public void SerializeTrackRequestModel()
     {
-        var trackRequestModel = new TrackRequestModel()
+        var track = new Track()
         {
             Attributes =
             [
@@ -23,9 +23,9 @@ public class UserDataSerializationTests
                     Gender = Gender.PreferNotToSay,
                     CustomAttributes = new ()
                     {
-                        { "yolo", new PropertyRequestModel.Literal() { Value = new PropertyLiteral.Integer() { Value = 42, } , }},
-                        { "yolo2", new PropertyRequestModel.Literal() { Value = new PropertyLiteral.Float() { Value = 42.42, } , }},
-                        { "yolo3", new PropertyRequestModel.IncrementInteger() { IncrementValue = 42, } },
+                        { "yolo", PropertyOp.Literal(42) },
+                        { "yolo2", PropertyOp.Literal(42.42) },
+                        { "yolo3", new PropertyOp.IncrementInteger() { IncrementValue = 42, } },
                     },
                 }
             ],
@@ -38,7 +38,7 @@ public class UserDataSerializationTests
                     Email = "yolo@foobar.com",
                     Properties = new ()
                     {
-                        { "thihi", PropertyLiteral.Create(DateTimeOffset.Parse("2004-01-01T00:00:00+00:00")) },
+                        { "thihi", Property.Create(DateTimeOffset.Parse("2004-01-01T00:00:00+00:00")) },
                     },
                 },
             ],
@@ -52,7 +52,7 @@ public class UserDataSerializationTests
                     Time = DateTimeOffset.Parse("2002-01-01T00:00:00+00:00"),
                     Properties = new ()
                     {
-                        { "foobar", PropertyLiteral.Create("FOOBAR") }
+                        { "foobar", Property.Create("FOOBAR") }
                     },
                 },
             ]
@@ -60,7 +60,7 @@ public class UserDataSerializationTests
 
 
         var serialized = JsonSerializer.Serialize(
-            trackRequestModel,
+            track,
             new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
         var actual = JsonDocument.Parse(serialized).RootElement;

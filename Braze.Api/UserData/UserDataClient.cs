@@ -18,14 +18,14 @@ public interface IUserDataClient
     /// <param name="trackRequest">The track request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The track response.</returns>
-    Task<ApiResponse<TrackResponseModel>> Track(TrackRequestModel trackRequest, CancellationToken cancellationToken = default);
+    Task<ApiResponse<TrackResponseModel>> Track(Track trackRequest, CancellationToken cancellationToken = default);
 }
 
 /// <inheritdoc/>
 public class UserDataClient(HttpClient httpClient) : IUserDataClient
 {
     /// <inheritdoc/>
-    public async Task<ApiResponse<TrackResponseModel>> Track(TrackRequestModel trackRequest, CancellationToken cancellationToken = default)
+    public async Task<ApiResponse<TrackResponseModel>> Track(Track trackRequest, CancellationToken cancellationToken = default)
     {
         var requestMessage = new HttpRequestMessage(
             HttpMethod.Post,
@@ -105,28 +105,28 @@ public class UserDataClient(HttpClient httpClient) : IUserDataClient
 /// <summary>
 /// The track request model.
 /// </summary>
-public class TrackRequestModel
+public class Track
 {
     /// <summary>
     /// The attributes.
     /// </summary>
     [JsonPropertyName("attributes")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<UserAttributeRequestModel>? Attributes { get; init; }
+    public List<UserAttribute>? Attributes { get; init; }
 
     /// <summary>
     /// The events.
     /// </summary>
     [JsonPropertyName("events")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<EventRequestModel>? Events { get; init; }
+    public List<Event>? Events { get; init; }
 
     /// <summary>
     /// The purchases.
     /// </summary>
     [JsonPropertyName("purchases")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<PurchaseRequestModel>? Purchases { get; init; }
+    public List<Purchase>? Purchases { get; init; }
 }
 
 /// <summary>

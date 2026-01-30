@@ -8,7 +8,7 @@ namespace Braze.Api.UserData;
 /// <summary>
 /// The user attribute request model.
 /// </summary>
-public class UserAttributeRequestModel
+public class UserAttribute
 {
     /// <summary>
     /// The external Id.
@@ -196,7 +196,7 @@ public class UserAttributeRequestModel
     /// The custom attributes.
     /// </summary>
     [JsonIgnore]
-    public Dictionary<string, PropertyRequestModel>? CustomAttributes { get; init; }
+    public Dictionary<string, PropertyOp>? CustomAttributes { get; init; }
 
     [JsonExtensionData]
     [JsonInclude]

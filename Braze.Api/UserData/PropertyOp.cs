@@ -8,30 +8,60 @@ namespace Braze.Api.UserData;
 /// <summary>
 /// The property request model.
 /// </summary>
-[JsonConverter(typeof(PropertyRequestModelConverter))]
-public abstract class PropertyRequestModel
+[JsonConverter(typeof(PropertyOpConverter))]
+public abstract class PropertyOp
 {
-    private PropertyRequestModel()
+    private PropertyOp()
     {
     }
 
     /// <summary>
+    /// Create a LiteralOp with the provided string value.
+    /// </summary>
+    public static PropertyOp Literal(string value) =>
+        new LiteralOp { Value = Property.Create(value), };
+
+    /// <summary>
+    /// Create a LiteralOp with the provided int value.
+    /// </summary>
+    public static PropertyOp Literal(int value) =>
+        new LiteralOp { Value = Property.Create(value), };
+
+    /// <summary>
+    /// Create a LiteralOp with the provided double value.
+    /// </summary>
+    public static PropertyOp Literal(double value) =>
+        new LiteralOp { Value = Property.Create(value), };
+
+    /// <summary>
+    /// Create a LiteralOp with the provided bool value.
+    /// </summary>
+    public static PropertyOp Literal(bool value) =>
+        new LiteralOp { Value = Property.Create(value), };
+
+    /// <summary>
+    /// Create a LiteralOp with the provided int value.
+    /// </summary>
+    public static PropertyOp Literal(DateTimeOffset value) =>
+        new LiteralOp { Value = Property.Create(value), };
+
+    /// <summary>
     /// A literal value.
     /// </summary>
-    [JsonConverter(typeof(PropertyRequestModelConverter))]
-    public class Literal : PropertyRequestModel
+    [JsonConverter(typeof(PropertyOpConverter))]
+    public class LiteralOp : PropertyOp
     {
         /// <summary>
         /// The value.
         /// </summary>
-        public required PropertyLiteral Value { get; init; }
+        public required Property Value { get; init; }
     }
 
     /// <summary>
     /// An integer that should be incremented.
     /// </summary>
-    [JsonConverter(typeof(PropertyRequestModelConverter))]
-    public class IncrementInteger : PropertyRequestModel
+    [JsonConverter(typeof(PropertyOpConverter))]
+    public class IncrementInteger : PropertyOp
     {
         /// <summary>
         /// The value to increment by.
@@ -42,8 +72,8 @@ public abstract class PropertyRequestModel
     /// <summary>
     /// An array that should be modified.
     /// </summary>
-    [JsonConverter(typeof(PropertyRequestModelConverter))]
-    public class ModifyArray : PropertyRequestModel
+    [JsonConverter(typeof(PropertyOpConverter))]
+    public class ModifyArray : PropertyOp
     {
         /// <summary>
         /// The modification type.
@@ -52,7 +82,7 @@ public abstract class PropertyRequestModel
         /// <summary>
         /// The values to add or remove.
         /// </summary>
-        public required List<PropertyLiteral> Values { get; init; }
+        public required List<Property> Values { get; init; }
     }
 }
 
@@ -71,9 +101,9 @@ public enum ModificationType
     Remove = 2,
 }
 
-internal class PropertyRequestModelConverter : JsonConverter<PropertyRequestModel>
+internal class PropertyOpConverter : JsonConverter<PropertyOp>
 {
-    public override PropertyRequestModel? Read(
+    public override PropertyOp? Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
         JsonSerializerOptions options) =>
@@ -81,21 +111,21 @@ internal class PropertyRequestModelConverter : JsonConverter<PropertyRequestMode
 
     public override void Write(
         Utf8JsonWriter writer,
-        PropertyRequestModel value,
+        PropertyOp value,
         JsonSerializerOptions options)
     {
         switch (value)
         {
-            case PropertyRequestModel.Literal literal:
+            case PropertyOp.LiteralOp literal:
                 JsonSerializer.Serialize(writer, literal.Value, options);
                 break;
-            case PropertyRequestModel.IncrementInteger inc:
+            case PropertyOp.IncrementInteger inc:
                 writer.WriteStartObject();
                 writer.WritePropertyName("inc");
                 writer.WriteNumberValue(inc.IncrementValue);
                 writer.WriteEndObject();
                 break;
-            case PropertyRequestModel.ModifyArray modify:
+            case PropertyOp.ModifyArray modify:
                 writer.WriteStartObject();
                 switch (modify.Type)
                 {
@@ -121,6 +151,6 @@ internal class PropertyRequestModelConverter : JsonConverter<PropertyRequestMode
         }
     }
 
-    public override bool CanConvert(Type typeToConvert) => typeToConvert.IsAssignableTo(typeof(PropertyRequestModel));
+    public override bool CanConvert(Type typeToConvert) => typeToConvert.IsAssignableTo(typeof(PropertyOp));
 }
 
