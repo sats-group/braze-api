@@ -3,7 +3,7 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CopyDocumentationFileToOutputDirectory>true</CopyDocumentationFileToOutputDirectory>
-    <PackageVersion>0.0.1-beta4</PackageVersion>
+    <PackageVersion>0.0.1-beta5</PackageVersion>
     <PackageId>Braze.Api</PackageId>
     <Authors>SATS Group developers</Authors>
     <Description>.NET bindings for the Braze API.</Description>
@@ -20,6 +20,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
     <PackageReference Include="System.Text.Json" Condition="'$(TargetFramework)' == 'net8.0'" />
   </ItemGroup>
 
