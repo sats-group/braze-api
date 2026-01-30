@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Braze.Api.Messages.Send;
 using Braze.Api.UserData;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -32,6 +33,11 @@ public interface IBrazeProvider
     /// Gets the <see cref="IUserDataClient"/> from this provider.
     /// </summary>
     IUserDataClient UserDataClient { get; }
+
+    /// <summary>
+    /// Gets the <see cref="IMessagesSendClient"/> from this provider.
+    /// </summary>
+    IMessagesSendClient MessagesSendClient { get; }
 }
 
 internal class BrazeProvider(IServiceProvider provider, object? key) : IBrazeProvider
@@ -41,7 +47,14 @@ internal class BrazeProvider(IServiceProvider provider, object? key) : IBrazePro
             ? provider.GetRequiredKeyedService<IUserDataClient>(key)
             : provider.GetRequiredService<IUserDataClient>());
 
+    private readonly Lazy<IMessagesSendClient> _messagesSendClient = new(() =>
+        key is not null
+            ? provider.GetRequiredKeyedService<IMessagesSendClient>(key)
+            : provider.GetRequiredService<IMessagesSendClient>());
+
     public IUserDataClient UserDataClient => _userDataClient.Value;
+
+    public IMessagesSendClient MessagesSendClient => _messagesSendClient.Value;
 }
 
 /// <summary>
@@ -56,6 +69,7 @@ public interface IBrazeProviderFactory
     /// <returns>A <see cref="IBrazeProvider"/>.</returns>
     IBrazeProvider Create(object? key = null);
 }
+
 internal class BrazeProviderFactory(IServiceProvider provider) : IBrazeProviderFactory
 {
     public IBrazeProvider Create(object? key = null) => new BrazeProvider(provider, key);

@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
+using Braze.Api.Messages.Send;
 using Braze.Api.UserData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -17,30 +18,27 @@ public static class BrazeConfiguration
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the necessary Braze.Api services.</param>
     /// <param name="key">The key use to register Braze clients as keyed services.</param>
-    /// <param name="optionsKey">The key of the config section to bind the <see cref="BrazeOptions"/> to.</param>
+    /// <param name="configSectionPath">The key of the config section to bind the <see cref="BrazeOptions"/> to.</param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddBrazeApi(this IServiceCollection services, object key, string optionsKey)
+    public static IServiceCollection AddBrazeApi(this IServiceCollection services, object key, string configSectionPath)
     {
         services
-            .AddOptions<BrazeOptions>(optionsKey)
-            .BindConfiguration(optionsKey)
+            .AddOptions<BrazeOptions>(configSectionPath)
+            .BindConfiguration(configSectionPath)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        services.AddHttpClient(optionsKey, (provider, client) =>
+        services.AddHttpClient(configSectionPath, (provider, client) =>
         {
             var optionsMonitor = provider.GetRequiredService<IOptionsMonitor<BrazeOptions>>();
-            var options = optionsMonitor.Get(optionsKey);
+            var options = optionsMonitor.Get(configSectionPath);
             client.BaseAddress = options.BaseAddress;
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", options.ApiKey);
         });
 
-        services.AddKeyedTransient<IUserDataClient, UserDataClient>(
-            key,
-            (provider, _) => new UserDataClient(provider
-                .GetRequiredService<IHttpClientFactory>()
-                .CreateClient(optionsKey)));
+        services.AddKeyedBraze<IUserDataClient, UserDataClient>(key, configSectionPath);
+        services.AddKeyedBraze<IMessagesSendClient, MessagesSendClient>(key, configSectionPath);
 
         services.AddBrazeProviderFactory();
 
@@ -77,6 +75,24 @@ public static class BrazeConfiguration
 
         return services;
     }
+
+    private static IServiceCollection AddKeyedBraze<TInterface, TImplementation>(this IServiceCollection services, object key, string optionsKey)
+        where TImplementation : class, TInterface
+        where TInterface : class
+    {
+        services.AddKeyedTransient<TInterface, TImplementation>(
+            key,
+            (provider, _) =>
+            {
+                var httpClient = provider
+                    .GetRequiredService<IHttpClientFactory>()
+                    .CreateClient(optionsKey);
+                return ActivatorUtilities.CreateInstance<TImplementation>(provider, httpClient);
+            });
+
+        return services;
+    }
+
 
     private static IServiceCollection AddBrazeProviderFactory(this IServiceCollection services)
     {

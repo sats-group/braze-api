@@ -68,28 +68,6 @@ internal class UserDataClient(HttpClient httpClient) : IUserDataClient
         };
     }
 
-    private class ErrorApiResponse
-    {
-        [JsonPropertyName("errors")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<string>? Errors { get; init; }
-
-        [JsonPropertyName("message")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? Message { get; init; }
-    }
-
-    private class ApiResponseModel
-    {
-        [JsonPropertyName("errors")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<string>? Errors { get; init; }
-
-        [JsonPropertyName("message")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? Message { get; init; }
-    }
-
     private class InternalTrackResponseModel : ApiResponseModel
     {
         [JsonPropertyName("attributes_processed")]

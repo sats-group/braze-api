@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Braze.Api.UserData;
+namespace Braze.Api;
 
 /// <summary>
 /// A literal value that can be a string, integer, float, time, array or object.
