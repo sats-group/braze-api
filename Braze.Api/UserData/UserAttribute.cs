@@ -8,43 +8,8 @@ namespace Braze.Api.UserData;
 /// <summary>
 /// The user attribute request model.
 /// </summary>
-public class UserAttribute
+public class UserAttribute : BrazeUserIdentifier
 {
-    /// <summary>
-    /// The external Id.
-    /// </summary>
-    [JsonPropertyName("external_id")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? ExternalId { get; init; }
-
-    /// <summary>
-    /// The user alias.
-    /// </summary>
-    [JsonPropertyName("user_alias")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public UserAlias? UserAlias { get; init; }
-
-    /// <summary>
-    /// The braze Id.
-    /// </summary>
-    [JsonPropertyName("braze_id")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? BrazeId { get; init; }
-
-    /// <summary>
-    /// The email.
-    /// </summary>
-    [JsonPropertyName("email")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Email { get; init; }
-
-    /// <summary>
-    /// The phone number.
-    /// </summary>
-    [JsonPropertyName("phone")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Phone { get; init; }
-
     /// <summary>
     /// If you have a user profile with a different external_id than the one in this request, you can use this to update the existing user profile.
     /// </summary>
