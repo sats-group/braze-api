@@ -1,6 +1,8 @@
 # .NET client library for the Braze Rest Api
 
-NOTE: unoffical and not affiliated with Braze in any way.
+This nuget package provides strongly typed API clients for [Braze's API](https://www.braze.com/docs/api/home).
+
+NOTE: unofficial and not affiliated with Braze in any way.
 
 ## Usage
 
@@ -50,8 +52,11 @@ var track = new Track()
             CustomAttributes = new ()
             {
                 { "yolo", PropertyOp.Literal(42) },
+                { "yolo_implicit", 42 },
                 { "yolo2", PropertyOp.Literal(42.42) },
                 { "yolo3", new PropertyOp.IncrementInteger() { IncrementValue = 42, } },
+                { "yolo5", (string?)null },
+
             },
         }
     ],
@@ -65,6 +70,7 @@ var track = new Track()
             Properties = new ()
             {
                 { "thihi", Property.Create(DateTimeOffset.Parse("2004-01-01T00:00:00+00:00")) },
+                { "foobar", 24.2 },
             },
         },
     ],
@@ -86,3 +92,21 @@ var track = new Track()
 
 await userDataClient.Track(track, CancellationToken.None);
 ```
+
+## Development
+
+The clients implemented in this package tries to replicate the logical structure in the [Braze API documentation](https://www.braze.com/docs/api/basics#braze-rest-api-collection).
+
+| Feature                  | Description                                                                 | Status                                       |
+|--------------------------|-----------------------------------------------------------------------------|----------------------------------------------|
+| Catalogs                 | Create and manage catalogs and catalog items to reference in your Braze campaigns. |                                              |
+| Cloud Data Ingestion     | Manage your data warehouse integrations and syncs.                          |                                              |
+| Email lists and addresses| Set up and manage bi-directional sync between Braze and your email systems. |                                              |
+| Export                   | Access and export various details of your campaigns, Canvases, KPIs, and more. |                                              |
+| Messages                 | Schedule, send, and manage your campaigns and Canvases.                     | Partially implmented (API-triggered campaign) |
+| Preference center        | Build your preference center and update the styling of it.                  |                                              |
+| SCIM                     | Manage user identities in cloud-based applications and services.            |                                              |
+| SMS                      | Manage your users’ phone numbers in your subscription groups.               |                                              |
+| Subscription groups      | List and update both SMS and email subscription groups stored in the Braze dashboard. |                                              |
+| Templates                | Create and update templates for email messaging and Content Blocks.         |                                              |
+| User data                | Identify, track, and manage your users.                                     | Partially implemented (track)   |
