@@ -54,17 +54,18 @@ internal class UserDataClient(HttpClient httpClient) : IUserDataClient
         var responseContent = await responseMessage.Content.ReadFromJsonAsync<InternalTrackResponseModel>(cancellationToken)
                               ?? throw new BrazeApiException("Unable to deserialize the response.");
 
-        return new ApiResponse<TrackResponse>(new TrackResponse
-        {
-            AttributesProcessed = responseContent.AttributesProcessed,
-            EventsProcessed = responseContent.EventsProcessed,
-            PurchasesProcessed = responseContent.PurchasesProcessed,
-        })
+        return new ApiResponse<TrackResponse>(
+            new TrackResponse
+            {
+                AttributesProcessed = responseContent.AttributesProcessed,
+                EventsProcessed = responseContent.EventsProcessed,
+                PurchasesProcessed = responseContent.PurchasesProcessed,
+            },
+            responseContent.Errors)
         {
             RateLimitingLimit = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Limit"),
             RateLimitingRemaining = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Remaining"),
             RateLimitingReset = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Reset"),
-            NonFatalErrors = responseContent.Errors,
         };
     }
 

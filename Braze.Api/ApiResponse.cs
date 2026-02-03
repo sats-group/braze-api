@@ -9,14 +9,17 @@ namespace Braze.Api;
 /// <typeparam name="T">The type of the value returned from the api call.</typeparam>
 public class ApiResponse<T>
 {
-    internal ApiResponse(T value)
+    internal ApiResponse(T? value, List<string>? nonFatalErrors)
     {
-        Success = true;
         Value = value;
+        NonFatalErrors = nonFatalErrors;
+        Success = value is not null
+                  && (nonFatalErrors is null
+                      || nonFatalErrors.Count == 0);
     }
 
     /// <summary>
-    /// Indicates that the api call was successful or had a non-fatal response (fatal errors will throw).
+    /// Indicates that the api call was successful and had _not_ a non-fatal response (fatal errors will throw).
     /// </summary>
     [MemberNotNullWhen(true, nameof(Value))]
     public bool Success { get; }
@@ -44,5 +47,5 @@ public class ApiResponse<T>
     /// <summary>
     /// A list of non-fatal errors.
     /// </summary>
-    public List<string>? NonFatalErrors { get; init; }
+    public List<string>? NonFatalErrors { get; }
 }

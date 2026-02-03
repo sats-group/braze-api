@@ -61,15 +61,13 @@ internal class MessagesSendClient(HttpClient httpClient) : IMessagesSendClient
         var responseContent = await responseMessage.Content.ReadFromJsonAsync<InternalTriggerSendResponseModel>(cancellationToken)
                               ?? throw new BrazeApiException("Unable to deserialize the response.");
 
-        return new ApiResponse<DispatchId>(new DispatchId()
-        {
-            Id = responseContent.Id,
-        })
+        return new ApiResponse<DispatchId>(
+            new DispatchId() { Id = responseContent.Id, },
+            responseContent.Errors)
         {
             RateLimitingLimit = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Limit"),
             RateLimitingRemaining = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Remaining"),
             RateLimitingReset = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Reset"),
-            NonFatalErrors = responseContent.Errors,
         };
     }
 
