@@ -5,7 +5,7 @@ namespace Braze.Api.UserData;
 /// <summary>
 /// The user identifier request model.
 /// </summary>
-public class BrazeUserIdentifier
+public abstract class BrazeUserIdentifier
 {
     /// <summary>
     /// The external Id.
