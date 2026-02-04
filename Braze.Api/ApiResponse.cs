@@ -19,7 +19,7 @@ public class ApiResponse<T>
     }
 
     /// <summary>
-    /// Indicates that the api call was successful and had _not_ a non-fatal response (fatal errors will throw).
+    /// Indicates that the api call was successful and had no non-fatal errors (fatal errors will throw).
     /// </summary>
     [MemberNotNullWhen(true, nameof(Value))]
     public bool Success { get; }
