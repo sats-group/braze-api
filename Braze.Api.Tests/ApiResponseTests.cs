@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Xunit;
 
 namespace Braze.Api.Tests;
@@ -33,7 +34,7 @@ public class ApiResponseTests
     [Fact]
     public void SuccessTestWhenErrorsIsNonEmpty()
     {
-        var response = new ApiResponse<string>("yolo", ["yolo"])
+        var response = new ApiResponse<string>("yolo", [JsonDocument.Parse("{}").RootElement])
         {
             RateLimitingLimit = 0,
             RateLimitingRemaining = 0,
@@ -46,7 +47,7 @@ public class ApiResponseTests
     [Fact]
     public void SuccessTestWhenValueIsNull()
     {
-        var response = new ApiResponse<string>(null, ["yolo"])
+        var response = new ApiResponse<string>(null, [JsonDocument.Parse("{}").RootElement])
         {
             RateLimitingLimit = 0,
             RateLimitingRemaining = 0,

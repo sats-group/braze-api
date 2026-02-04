@@ -10,7 +10,7 @@ public class UserDataSerializationTests
     [Fact]
     public void SerializeTrackRequestModel()
     {
-        var track = new Track()
+        var track = new TrackRequest()
         {
             Attributes =
             [

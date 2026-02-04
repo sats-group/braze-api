@@ -1,6 +1,9 @@
 name: nuget
 
 on:
+  push:
+    tags:
+      - 'release/*'
   pull_request:
     branches:
       - main
@@ -47,8 +50,25 @@ jobs:
             9.0.x
             10.0.x
 
+      - name: Compute version suffix (non-main only)
+        run: |
+          # For workflow_dispatch on branches: github.ref_name is the branch
+          # For push tags: github.ref_type == "tag" (no suffix)
+          # For pull_request: ref is refs/pull/... (treat as non-main => suffix)
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "VERSION_SUFFIX=preview.${{ github.run_id }}" >> "$GITHUB_ENV"
+          elif [[ "${{ github.ref_type }}" == "branch" && "${{ github.ref_name }}" != "main" ]]; then
+            echo "VERSION_SUFFIX=preview.${{ github.run_id }}" >> "$GITHUB_ENV"
+          fi
+
       - name: dotnet pack
-        run: dotnet pack Braze.Api --configuration Release
+        run: |
+          EXTRA_ARGS=""
+          if [[ -n "${VERSION_SUFFIX:-}" ]]; then
+            EXTRA_ARGS="--version-suffix $VERSION_SUFFIX"
+          fi
+
+          dotnet pack Braze.Api --configuration Release $EXTRA_ARGS
 
       - name: upload nupkg
         uses: actions/upload-artifact@v4
@@ -57,7 +77,7 @@ jobs:
           path: Braze.Api/bin/Release/Braze.Api*.nupkg
 
   push-nuget:
-    if: ${{ inputs.release }}
+    if: ${{ inputs.release || startsWith(github.ref, 'refs/tags/release/') }}
     runs-on: ubuntu-latest
     needs: [pack]
     defaults:

@@ -44,36 +44,6 @@ internal class MessagesSendClient(HttpClient httpClient) : IMessagesSendClient
 
         using var responseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
 
-        if (!responseMessage.IsSuccessStatusCode)
-        {
-            var errorResponse = await responseMessage.Content.ReadFromJsonAsync<ErrorApiResponse>(cancellationToken);
-
-            throw new BrazeApiException(
-                errorResponse?.Message
-                ?? $"Unknown error while sending request to Braze: {requestMessage.Method} {requestMessage.RequestUri}.")
-            {
-                HttpStatusCode = responseMessage.StatusCode,
-                Errors = errorResponse?.Errors,
-                RateLimitingRetryAfter = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Retry-After"),
-            };
-        }
-
-        var responseContent = await responseMessage.Content.ReadFromJsonAsync<InternalTriggerSendResponseModel>(cancellationToken)
-                              ?? throw new BrazeApiException("Unable to deserialize the response.");
-
-        return new ApiResponse<DispatchId>(
-            new DispatchId() { Id = responseContent.Id, },
-            responseContent.Errors)
-        {
-            RateLimitingLimit = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Limit"),
-            RateLimitingRemaining = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Remaining"),
-            RateLimitingReset = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Reset"),
-        };
-    }
-
-    private class InternalTriggerSendResponseModel : ApiResponseModel
-    {
-        [JsonPropertyName("dispatch_id")]
-        public required string Id { get; init; }
+        return await responseMessage.CreateApiResponse<DispatchId>(cancellationToken);
     }
 }
