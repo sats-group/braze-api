@@ -47,7 +47,7 @@ internal sealed class ApiResponseJsonConverterFactory : JsonConverterFactory
                 || messageEl.ValueKind != JsonValueKind.String
                 || messageEl.GetString() is not { } message)
             {
-                throw new JsonException("Required 'message' strings.");
+                throw new JsonException("Required 'message' property is missing or not a string.");
             }
 
             List<JsonElement>? errors = null;
