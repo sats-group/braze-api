@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 namespace Braze.Api;
 
@@ -9,7 +10,7 @@ namespace Braze.Api;
 /// <typeparam name="T">The type of the value returned from the api call.</typeparam>
 public class ApiResponse<T>
 {
-    internal ApiResponse(T? value, List<string>? nonFatalErrors)
+    internal ApiResponse(T? value, List<JsonElement>? nonFatalErrors)
     {
         Value = value;
         NonFatalErrors = nonFatalErrors;
@@ -47,5 +48,6 @@ public class ApiResponse<T>
     /// <summary>
     /// A list of non-fatal errors.
     /// </summary>
-    public List<string>? NonFatalErrors { get; }
+    /// <remarks>The item type is subject to change, but no documentation on these error items have been found.</remarks>
+    public List<JsonElement>? NonFatalErrors { get; }
 }

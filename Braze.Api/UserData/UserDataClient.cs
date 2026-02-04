@@ -19,14 +19,14 @@ public interface IUserDataClient
     /// <param name="trackRequest">The track request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The track response.</returns>
-    Task<ApiResponse<TrackResponse>> Track(Track trackRequest, CancellationToken cancellationToken = default);
+    Task<ApiResponse<TrackResponse>> Track(TrackRequest trackRequest, CancellationToken cancellationToken = default);
 }
 
 /// <inheritdoc/>
 internal class UserDataClient(HttpClient httpClient) : IUserDataClient
 {
     /// <inheritdoc/>
-    public async Task<ApiResponse<TrackResponse>> Track(Track trackRequest, CancellationToken cancellationToken = default)
+    public async Task<ApiResponse<TrackResponse>> Track(TrackRequest trackRequest, CancellationToken cancellationToken = default)
     {
         var requestMessage = new HttpRequestMessage(
             HttpMethod.Post,
@@ -37,55 +37,14 @@ internal class UserDataClient(HttpClient httpClient) : IUserDataClient
 
         using var responseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
 
-        if (!responseMessage.IsSuccessStatusCode)
-        {
-            var errorResponse = await responseMessage.Content.ReadFromJsonAsync<ErrorApiResponse>(cancellationToken);
-
-            throw new BrazeApiException(
-                errorResponse?.Message
-                ?? $"Unknown error while sending request to Braze: {requestMessage.Method} {requestMessage.RequestUri}.")
-            {
-                HttpStatusCode = responseMessage.StatusCode,
-                Errors = errorResponse?.Errors,
-                RateLimitingRetryAfter = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Retry-After"),
-            };
-        }
-
-        var responseContent = await responseMessage.Content.ReadFromJsonAsync<InternalTrackResponseModel>(cancellationToken)
-                              ?? throw new BrazeApiException("Unable to deserialize the response.");
-
-        return new ApiResponse<TrackResponse>(
-            new TrackResponse
-            {
-                AttributesProcessed = responseContent.AttributesProcessed,
-                EventsProcessed = responseContent.EventsProcessed,
-                PurchasesProcessed = responseContent.PurchasesProcessed,
-            },
-            responseContent.Errors)
-        {
-            RateLimitingLimit = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Limit"),
-            RateLimitingRemaining = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Remaining"),
-            RateLimitingReset = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Reset"),
-        };
-    }
-
-    private class InternalTrackResponseModel : ApiResponseModel
-    {
-        [JsonPropertyName("attributes_processed")]
-        public int? AttributesProcessed { get; init; }
-
-        [JsonPropertyName("events_processed")]
-        public int? EventsProcessed { get; init; }
-
-        [JsonPropertyName("purchases_processed")]
-        public int? PurchasesProcessed { get; init; }
+        return await responseMessage.CreateApiResponse<TrackResponse>(cancellationToken);
     }
 }
 
 /// <summary>
 /// The track request model.
 /// </summary>
-public class Track
+public class TrackRequest
 {
     /// <summary>
     /// The attributes.
@@ -118,17 +77,20 @@ public class TrackResponse
     /// If attributes are included in the request, this returns an integer of the number of external_ids with attributes that Braze queued for processing.
     /// </summary>
     [JsonPropertyName("attributes_processed")]
-    public required int? AttributesProcessed { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? AttributesProcessed { get; init; }
 
     /// <summary>
     /// If events are included in the request, this returns an integer of the number of events that Braze queued for processing.
     /// </summary>
     [JsonPropertyName("events_processed")]
-    public required int? EventsProcessed { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? EventsProcessed { get; init; }
 
     /// <summary>
     /// If purchases are included in the request, this returns an integer of the number of purchases that Braze queued for processing.
     /// </summary>
     [JsonPropertyName("purchases_processed")]
-    public required int? PurchasesProcessed { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? PurchasesProcessed { get; init; }
 }
