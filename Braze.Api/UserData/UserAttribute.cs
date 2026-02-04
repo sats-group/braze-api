@@ -170,8 +170,8 @@ public class UserAttribute : BrazeUserIdentifier
     private Dictionary<string, object>? CustomAttributesExtensionData => CustomAttributes?
 #pragma warning restore IDE0051
         .ToDictionary(
-            kv => kv.Key,
-            kv => (object)kv.Value);
+            static kv => kv.Key,
+            static kv => (object)kv.Value);
 }
 
 /// <summary>

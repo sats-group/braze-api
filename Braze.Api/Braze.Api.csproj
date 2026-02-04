@@ -3,7 +3,7 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CopyDocumentationFileToOutputDirectory>true</CopyDocumentationFileToOutputDirectory>
-    <PackageVersion>0.0.1</PackageVersion>
+    <PackageVersion>0.0.2</PackageVersion>
     <PackageId>Braze.Api</PackageId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>SATS Group developers</Authors>
@@ -13,11 +13,11 @@
     <PackageProjectUrl>https://github.com/sats-group/braze-api</PackageProjectUrl>
     <PackageTags>braze</PackageTags>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <InternalsVisibleTo Include="Braze.Api.Tests" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>

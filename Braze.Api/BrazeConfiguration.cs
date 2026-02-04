@@ -81,7 +81,7 @@ public static class BrazeConfiguration
 
         return services.AddHttpClient(
             httpClientName,
-            (provider, client) =>
+            static (provider, client) =>
             {
                 var options = provider.GetRequiredService<IOptions<BrazeOptions>>();
                 client.BaseAddress = options.Value.BaseAddress;
