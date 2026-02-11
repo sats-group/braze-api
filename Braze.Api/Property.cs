@@ -190,7 +190,7 @@ internal class PropertyConverter : JsonConverter<Property>
                 // Try to parse as DateTimeOffset only if it's in ISO 8601 format
                 // This ensures we only parse strings that were likely serialized from Property.Time
                 if (stringValue != null &&
-                    stringValue.Length > MinIso8601Length &&
+                    stringValue.Length >= MinIso8601Length &&
                     IsIso8601Format(stringValue) &&
                     DateTimeOffset.TryParse(stringValue, out var dateTimeOffset))
                 {
@@ -250,9 +250,28 @@ internal class PropertyConverter : JsonConverter<Property>
         }
     }
 
-    private static bool IsIso8601Format(string value) =>
-        value.Contains('T') &&
-        (value.Contains('+') || value.Contains('-') || value.EndsWith('Z'));
+    private static bool IsIso8601Format(string value)
+    {
+        // Check for 'T' separator (date-time separator)
+        if (!value.Contains('T'))
+        {
+            return false;
+        }
+
+        // Check for timezone indicators: ends with 'Z' or contains '+' or '-' in timezone position
+        // We verify the position to avoid false positives with strings like "T-shirt"
+        var tIndex = value.IndexOf('T');
+        if (value.EndsWith('Z'))
+        {
+            return true;
+        }
+
+        // Check for '+' or '-' after the time component (after 'T')
+        var lastPlusIndex = value.LastIndexOf('+');
+        var lastMinusIndex = value.LastIndexOf('-');
+
+        return (lastPlusIndex > tIndex) || (lastMinusIndex > tIndex);
+    }
 
     public override void Write(
         Utf8JsonWriter writer,

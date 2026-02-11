@@ -126,6 +126,31 @@ public class PropertySerializationTests
     }
 
     [Fact]
+    public void DeserializeStringWithTAndMinus()
+    {
+        // Strings like "T-shirt" should remain as strings, not be parsed as dates
+        var json = "\"T-shirt\"";
+        var property = JsonSerializer.Deserialize<Property>(json);
+
+        Assert.NotNull(property);
+        Assert.IsType<Property.String>(property);
+        Assert.Equal("T-shirt", ((Property.String)property).Value);
+    }
+
+    [Fact]
+    public void DeserializeDateOnlyString()
+    {
+        // Date-only strings in ISO 8601 format should NOT be parsed as Property.Time
+        // because they don't have a timezone component
+        var json = "\"2024-01-01\"";
+        var property = JsonSerializer.Deserialize<Property>(json);
+
+        Assert.NotNull(property);
+        Assert.IsType<Property.String>(property);
+        Assert.Equal("2024-01-01", ((Property.String)property).Value);
+    }
+
+    [Fact]
     public void DeserializeObjectProperty()
     {
         var json = "{\"name\": \"John\", \"age\": 30, \"active\": true}";
