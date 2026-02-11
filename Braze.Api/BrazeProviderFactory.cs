@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Braze.Api.Messages.Send;
 using Braze.Api.UserData;
