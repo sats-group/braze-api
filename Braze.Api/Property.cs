@@ -185,10 +185,17 @@ internal class PropertyConverter : JsonConverter<Property>
         {
             case JsonTokenType.String:
                 var stringValue = reader.GetString();
-                // Try to parse as DateTimeOffset first
-                if (DateTimeOffset.TryParse(stringValue, out var dateTimeOffset))
+                // Try to parse as DateTimeOffset only if it's in ISO 8601 format
+                // This ensures we only parse strings that were likely serialized from Property.Time
+                if (stringValue != null &&
+                    stringValue.Length > 10 &&
+                    DateTimeOffset.TryParse(stringValue, out var dateTimeOffset))
                 {
-                    return new Property.Time() { Value = dateTimeOffset };
+                    // Verify it's in ISO 8601-like format by checking for 'T' and timezone
+                    if (stringValue.Contains('T') && (stringValue.Contains('+') || stringValue.Contains('-') || stringValue.EndsWith('Z')))
+                    {
+                        return new Property.Time() { Value = dateTimeOffset };
+                    }
                 }
                 return new Property.String() { Value = stringValue };
 
@@ -227,7 +234,8 @@ internal class PropertyConverter : JsonConverter<Property>
                 {
                     if (reader.TokenType == JsonTokenType.PropertyName)
                     {
-                        var propertyName = reader.GetString() ?? string.Empty;
+                        var propertyName = reader.GetString();
+                        ArgumentNullException.ThrowIfNull(propertyName);
                         reader.Read();
                         var propertyValue = JsonSerializer.Deserialize<Property>(ref reader, options);
                         if (propertyValue != null)

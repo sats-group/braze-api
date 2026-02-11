@@ -7,6 +7,8 @@ namespace Braze.Api.Tests;
 
 public class PropertySerializationTests
 {
+    private const string TestDateTimeString = "2024-01-01T00:00:00+00:00";
+
     [Fact]
     public void DeserializeStringProperty()
     {
@@ -74,12 +76,12 @@ public class PropertySerializationTests
     [Fact]
     public void DeserializeDateTimeOffsetProperty()
     {
-        var json = "\"2024-01-01T00:00:00+00:00\"";
+        var json = $"\"{TestDateTimeString}\"";
         var property = JsonSerializer.Deserialize<Property>(json);
 
         Assert.NotNull(property);
         Assert.IsType<Property.Time>(property);
-        var expected = DateTimeOffset.Parse("2024-01-01T00:00:00+00:00");
+        var expected = DateTimeOffset.Parse(TestDateTimeString);
         Assert.Equal(expected, ((Property.Time)property).Value);
     }
 
@@ -97,6 +99,30 @@ public class PropertySerializationTests
         Assert.IsType<Property.String>(array[1]);
         Assert.IsType<Property.Bool>(array[2]);
         Assert.IsType<Property.Float>(array[3]);
+    }
+
+    [Fact]
+    public void DeserializeStringThatLooksLikeYear()
+    {
+        // Strings like "2024" should remain as strings, not be parsed as dates
+        var json = "\"2024\"";
+        var property = JsonSerializer.Deserialize<Property>(json);
+
+        Assert.NotNull(property);
+        Assert.IsType<Property.String>(property);
+        Assert.Equal("2024", ((Property.String)property).Value);
+    }
+
+    [Fact]
+    public void DeserializeStringThatLooksLikePartialDate()
+    {
+        // Strings like "March 2024" should remain as strings
+        var json = "\"March 2024\"";
+        var property = JsonSerializer.Deserialize<Property>(json);
+
+        Assert.NotNull(property);
+        Assert.IsType<Property.String>(property);
+        Assert.Equal("March 2024", ((Property.String)property).Value);
     }
 
     [Fact]
@@ -128,7 +154,7 @@ public class PropertySerializationTests
                 { "integer", Property.Create(42) },
                 { "float", Property.Create(42.5) },
                 { "bool", Property.Create(true) },
-                { "time", Property.Create(DateTimeOffset.Parse("2024-01-01T00:00:00+00:00")) },
+                { "time", Property.Create(DateTimeOffset.Parse(TestDateTimeString)) },
                 { "array", Property.Create(new List<Property> { Property.Create(1), Property.Create("nested") }) }
             }
         };
@@ -145,7 +171,7 @@ public class PropertySerializationTests
         Assert.Equal(42, ((Property.Integer)obj["integer"]).Value);
         Assert.Equal(42.5, ((Property.Float)obj["float"]).Value);
         Assert.True(((Property.Bool)obj["bool"]).Value);
-        Assert.Equal(DateTimeOffset.Parse("2024-01-01T00:00:00+00:00"), ((Property.Time)obj["time"]).Value);
+        Assert.Equal(DateTimeOffset.Parse(TestDateTimeString), ((Property.Time)obj["time"]).Value);
 
         var array = ((Property.Array)obj["array"]).Value;
         Assert.Equal(2, array.Count);
