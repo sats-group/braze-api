@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -176,11 +176,102 @@ public abstract class Property
 
 internal class PropertyConverter : JsonConverter<Property>
 {
+    private const int MinIso8601Length = 10;
+
     public override Property? Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
-        JsonSerializerOptions options) =>
-        throw new NotImplementedException();
+        JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.String:
+                var stringValue = reader.GetString();
+                // Try to parse as DateTimeOffset only if it's in ISO 8601 format
+                // This ensures we only parse strings that were likely serialized from Property.Time
+                if (stringValue != null &&
+                    stringValue.Length >= MinIso8601Length &&
+                    IsIso8601Format(stringValue) &&
+                    DateTimeOffset.TryParse(stringValue, out var dateTimeOffset))
+                {
+                    return new Property.Time() { Value = dateTimeOffset };
+                }
+                return new Property.String() { Value = stringValue };
+
+            case JsonTokenType.Number:
+                // Check if it's an integer or float
+                if (reader.TryGetInt32(out var intValue))
+                {
+                    return new Property.Integer() { Value = intValue };
+                }
+                return new Property.Float() { Value = reader.GetDouble() };
+
+            case JsonTokenType.True:
+                return new Property.Bool() { Value = true };
+
+            case JsonTokenType.False:
+                return new Property.Bool() { Value = false };
+
+            case JsonTokenType.Null:
+                return null;
+
+            case JsonTokenType.StartArray:
+                var list = new List<Property>();
+                while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                {
+                    var item = JsonSerializer.Deserialize<Property>(ref reader, options);
+                    if (item != null)
+                    {
+                        list.Add(item);
+                    }
+                }
+                return new Property.Array() { Value = list };
+
+            case JsonTokenType.StartObject:
+                var dict = new Dictionary<string, Property>();
+                while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+                {
+                    if (reader.TokenType == JsonTokenType.PropertyName)
+                    {
+                        var propertyName = reader.GetString();
+                        ArgumentNullException.ThrowIfNull(propertyName);
+                        reader.Read();
+                        var propertyValue = JsonSerializer.Deserialize<Property>(ref reader, options);
+                        if (propertyValue != null)
+                        {
+                            dict[propertyName] = propertyValue;
+                        }
+                    }
+                }
+                return new Property.Object() { Value = dict };
+
+            default:
+                throw new JsonException($"Unexpected token type: {reader.TokenType}");
+        }
+    }
+
+    private static bool IsIso8601Format(string value)
+    {
+        // Check for 'T' separator (date-time separator)
+        if (!value.Contains('T'))
+        {
+            return false;
+        }
+
+        // Check for timezone indicators: ends with 'Z' or contains '+' or '-' in timezone position
+        // We verify the position to avoid false positives with strings like "T-shirt"
+        var tIndex = value.IndexOf('T');
+        if (value.EndsWith('Z'))
+        {
+            return true;
+        }
+
+        // Check for '+' or '-' after the time component (after 'T')
+        var lastPlusIndex = value.LastIndexOf('+');
+        var lastMinusIndex = value.LastIndexOf('-');
+
+        return (lastPlusIndex > tIndex) || (lastMinusIndex > tIndex);
+    }
 
     public override void Write(
         Utf8JsonWriter writer,
