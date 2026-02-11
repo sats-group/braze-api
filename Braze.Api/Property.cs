@@ -176,6 +176,8 @@ public abstract class Property
 
 internal class PropertyConverter : JsonConverter<Property>
 {
+    private const int MinIso8601Length = 10;
+
     public override Property? Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
@@ -188,14 +190,11 @@ internal class PropertyConverter : JsonConverter<Property>
                 // Try to parse as DateTimeOffset only if it's in ISO 8601 format
                 // This ensures we only parse strings that were likely serialized from Property.Time
                 if (stringValue != null &&
-                    stringValue.Length > 10 &&
+                    stringValue.Length > MinIso8601Length &&
+                    IsIso8601Format(stringValue) &&
                     DateTimeOffset.TryParse(stringValue, out var dateTimeOffset))
                 {
-                    // Verify it's in ISO 8601-like format by checking for 'T' and timezone
-                    if (stringValue.Contains('T') && (stringValue.Contains('+') || stringValue.Contains('-') || stringValue.EndsWith('Z')))
-                    {
-                        return new Property.Time() { Value = dateTimeOffset };
-                    }
+                    return new Property.Time() { Value = dateTimeOffset };
                 }
                 return new Property.String() { Value = stringValue };
 
@@ -250,6 +249,10 @@ internal class PropertyConverter : JsonConverter<Property>
                 throw new JsonException($"Unexpected token type: {reader.TokenType}");
         }
     }
+
+    private static bool IsIso8601Format(string value) =>
+        value.Contains('T') &&
+        (value.Contains('+') || value.Contains('-') || value.EndsWith('Z'));
 
     public override void Write(
         Utf8JsonWriter writer,
