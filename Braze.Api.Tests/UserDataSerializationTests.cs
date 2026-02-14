@@ -111,4 +111,86 @@ public class UserDataSerializationTests
 
         Assert.True(JsonElement.DeepEquals(expected, actual), $"'{actual}' not equal to '{expected}'");
     }
+
+    [Fact]
+    public void SerializeFirstNameWithValue()
+    {
+        var attribute = new UserAttribute()
+        {
+            ExternalId = "user-123",
+            FirstName = "John"
+        };
+
+        var serialized = JsonSerializer.Serialize(
+            attribute,
+            new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+        var actual = JsonDocument.Parse(serialized).RootElement;
+        var expected = JsonDocument
+            .Parse(
+                """
+                {
+                  "external_id": "user-123",
+                  "first_name": "John"
+                }
+                """)
+            .RootElement;
+
+        Assert.True(JsonElement.DeepEquals(expected, actual), $"'{actual}' not equal to '{expected}'");
+    }
+
+    [Fact]
+    public void SerializeFirstNameWhenNull()
+    {
+        var attribute = new UserAttribute()
+        {
+            ExternalId = "user-123",
+            FirstName = null
+        };
+
+        var serialized = JsonSerializer.Serialize(
+            attribute,
+            new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+        var actual = JsonDocument.Parse(serialized).RootElement;
+        var expected = JsonDocument
+            .Parse(
+                """
+                {
+                  "external_id": "user-123"
+                }
+                """)
+            .RootElement;
+
+        Assert.True(JsonElement.DeepEquals(expected, actual), $"'{actual}' not equal to '{expected}'");
+    }
+
+    [Fact]
+    public void SerializeFirstNameAndLastNameTogether()
+    {
+        var attribute = new UserAttribute()
+        {
+            ExternalId = "user-123",
+            FirstName = "John",
+            LastName = "Doe"
+        };
+
+        var serialized = JsonSerializer.Serialize(
+            attribute,
+            new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+        var actual = JsonDocument.Parse(serialized).RootElement;
+        var expected = JsonDocument
+            .Parse(
+                """
+                {
+                  "external_id": "user-123",
+                  "first_name": "John",
+                  "last_name": "Doe"
+                }
+                """)
+            .RootElement;
+
+        Assert.True(JsonElement.DeepEquals(expected, actual), $"'{actual}' not equal to '{expected}'");
+    }
 }

@@ -109,6 +109,13 @@ public class UserAttribute : BrazeUserIdentifier
     public string? Language { get; init; }
 
     /// <summary>
+    /// The first name.
+    /// </summary>
+    [JsonPropertyName("first_name")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? FirstName { get; init; }
+
+    /// <summary>
     /// The last name.
     /// </summary>
     [JsonPropertyName("last_name")]
