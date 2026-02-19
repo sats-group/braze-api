@@ -92,3 +92,47 @@ This is a .NET client library providing strongly typed API clients for Braze's A
 - Multi-targeting requires testing across all target frameworks (net8.0, net9.0, net10.0)
 - The package is dual-licensed: MIT OR Apache-2.0
 - Keep dependencies minimal and aligned with target framework versions
+
+## Git Workflow - IMPORTANT
+
+### Avoiding Unintended File Commits
+
+**CRITICAL**: Do NOT use `git add .` or `git add -A` as it will stage files with only BOM (Byte Order Mark) changes that shouldn't be committed.
+
+**Correct workflow**:
+1. After making changes, check which files actually have code changes:
+   ```bash
+   git diff --name-only
+   git status
+   ```
+
+2. **Only add files you intentionally modified**:
+   ```bash
+   git add path/to/file1.cs path/to/file2.cs
+   ```
+   Or use the report_progress tool which will handle git operations correctly.
+
+3. Before committing, verify only intended files are staged:
+   ```bash
+   git diff --cached --name-only
+   ```
+
+### Why This Matters
+
+- C# files in this repo use UTF-8 with BOM encoding (per .editorconfig)
+- Opening/viewing files may add BOMs to files that don't have them
+- This makes git see them as "changed" even though no code changed
+- A .gitattributes file exists to normalize this, but explicit staging is still required
+
+### If You Accidentally Stage Too Many Files
+
+```bash
+# Unstage everything
+git reset
+
+# Check what's actually changed (not just BOM)
+git diff --name-only
+
+# Stage only the files with real changes
+git add <file1> <file2> <file3>
+```
