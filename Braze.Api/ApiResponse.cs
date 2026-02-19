@@ -20,6 +20,48 @@ public class ApiResponse<T>
     }
 
     /// <summary>
+    /// Creates a successful API response for testing purposes.
+    /// </summary>
+    /// <param name="value">The response value.</param>
+    /// <param name="rateLimitingLimit">The rate limit (default: 250000).</param>
+    /// <param name="rateLimitingRemaining">The remaining rate limit (default: 249999).</param>
+    /// <param name="rateLimitingReset">The rate limit reset time in seconds (default: 60).</param>
+    /// <returns>A successful API response.</returns>
+    public static ApiResponse<T> CreateSuccess(
+        T value,
+        int rateLimitingLimit = 250000,
+        int rateLimitingRemaining = 249999,
+        int rateLimitingReset = 60) =>
+        new(value, null)
+        {
+            RateLimitingLimit = rateLimitingLimit,
+            RateLimitingRemaining = rateLimitingRemaining,
+            RateLimitingReset = rateLimitingReset,
+        };
+
+    /// <summary>
+    /// Creates an API response with non-fatal errors for testing purposes.
+    /// </summary>
+    /// <param name="value">The response value (can be null).</param>
+    /// <param name="nonFatalErrors">The list of non-fatal errors.</param>
+    /// <param name="rateLimitingLimit">The rate limit (default: 250000).</param>
+    /// <param name="rateLimitingRemaining">The remaining rate limit (default: 249999).</param>
+    /// <param name="rateLimitingReset">The rate limit reset time in seconds (default: 60).</param>
+    /// <returns>An API response with non-fatal errors.</returns>
+    public static ApiResponse<T> CreateWithErrors(
+        T? value,
+        List<JsonElement> nonFatalErrors,
+        int rateLimitingLimit = 250000,
+        int rateLimitingRemaining = 249999,
+        int rateLimitingReset = 60) =>
+        new(value, nonFatalErrors)
+        {
+            RateLimitingLimit = rateLimitingLimit,
+            RateLimitingRemaining = rateLimitingRemaining,
+            RateLimitingReset = rateLimitingReset,
+        };
+
+    /// <summary>
     /// Indicates that the api call was successful and had no non-fatal errors (fatal errors will throw).
     /// </summary>
     [MemberNotNullWhen(true, nameof(Value))]
