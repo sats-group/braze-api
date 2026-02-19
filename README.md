@@ -93,6 +93,42 @@ var track = new Track()
 await userDataClient.Track(track, CancellationToken.None);
 ```
 
+## Testing
+
+The library is designed to be easily mockable for unit testing. You can create `ApiResponse<T>` objects using the provided factory methods:
+
+```cs
+// Create a successful response
+var response = ApiResponse<TrackResponse>.CreateSuccess(
+    new TrackResponse
+    {
+        AttributesProcessed = 1,
+        EventsProcessed = 2,
+        PurchasesProcessed = 3
+    });
+
+// Create a response with custom rate limits
+var response = ApiResponse<TrackResponse>.CreateSuccess(
+    new TrackResponse { AttributesProcessed = 5 },
+    rateLimitingLimit: 100000,
+    rateLimitingRemaining: 50000,
+    rateLimitingReset: 120);
+
+// Create a response with non-fatal errors
+var response = ApiResponse<TrackResponse>.CreateWithErrors(
+    new TrackResponse { AttributesProcessed = 0 },
+    [JsonDocument.Parse("{\"error\":\"test\"}").RootElement]);
+```
+
+You can then use these responses with your favorite mocking library (e.g., Moq, NSubstitute) to mock the client interfaces:
+
+```cs
+var mockClient = new Mock<IUserDataClient>();
+mockClient
+    .Setup(x => x.Track(It.IsAny<TrackRequest>(), It.IsAny<CancellationToken>()))
+    .ReturnsAsync(ApiResponse<TrackResponse>.CreateSuccess(new TrackResponse()));
+```
+
 ## Development
 
 The clients implemented in this package tries to replicate the logical structure in the [Braze API documentation](https://www.braze.com/docs/api/basics#braze-rest-api-collection).
