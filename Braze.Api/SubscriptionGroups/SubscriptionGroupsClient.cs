@@ -71,21 +71,23 @@ public class SubscriptionGroupUpdate
     public required string SubscriptionState { get; init; }
 
     /// <summary>
-    /// The external IDs of the users. May include up to 50 IDs.
+    /// The external IDs of the users. The total number of users across all identifier types (external_ids, emails, phones) must not exceed 50
     /// </summary>
     [JsonPropertyName("external_ids")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? ExternalIds { get; init; }
 
     /// <summary>
-    /// The email addresses of the users. Must include at least one email address (with a maximum of 50).
+    /// The email addresses of the users. Must include at least one email address (with a maximum of 50) when identifying users by email.
+    /// The total number of users across all identifier types (external_ids, emails, phones) must not exceed 50
     /// </summary>
     [JsonPropertyName("emails")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? Emails { get; init; }
 
     /// <summary>
-    /// The phone numbers of the users in E.164 format. Must include at least one phone number (up to 50).
+    /// The phone numbers of the users in E.164 format. Must include at least one phone number (up to 50) when identifying users by phone number.
+    /// The total number of users across all identifier types (external_ids, emails, phones) must not exceed 50
     /// </summary>
     [JsonPropertyName("phones")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
