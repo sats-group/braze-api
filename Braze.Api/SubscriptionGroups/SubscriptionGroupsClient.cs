@@ -140,7 +140,7 @@ public class SubscriptionStatusSetResponse
 internal class SubscriptionStateJsonConverter : JsonConverter<SubscriptionState>
 {
     /// <summary>
-    /// /// <inheritdoc/>
+    /// <inheritdoc/>
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="typeToConvert"></param>
@@ -156,11 +156,11 @@ internal class SubscriptionStateJsonConverter : JsonConverter<SubscriptionState>
     /// <inheritdoc/>
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="dateTimeValue"></param>
+    /// <param name="subscriptionState"></param>
     /// <param name="options"></param>
     public override void Write(
         Utf8JsonWriter writer,
-        SubscriptionState dateTimeValue,
+        SubscriptionState subscriptionState,
         JsonSerializerOptions options) =>
-        writer.WriteStringValue(dateTimeValue.ToString().ToLowerInvariant());
+        writer.WriteStringValue(subscriptionState.ToString().ToLowerInvariant());
 }
