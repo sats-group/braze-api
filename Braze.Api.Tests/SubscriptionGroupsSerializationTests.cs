@@ -17,7 +17,7 @@ public class SubscriptionGroupsSerializationTests
                 new SubscriptionGroupUpdate
                 {
                     SubscriptionGroupId = "subscription_group_identifier",
-                    SubscriptionState = "subscribed",
+                    SubscriptionState = SubscriptionState.Subscribed,
                     ExternalIds = ["example-user", "[email protected]"]
                 }
             ]
@@ -39,7 +39,7 @@ public class SubscriptionGroupsSerializationTests
                 new SubscriptionGroupUpdate
                 {
                     SubscriptionGroupId = "subscription_group_identifier",
-                    SubscriptionState = "subscribed",
+                    SubscriptionState = SubscriptionState.Subscribed,
                     Emails = ["[email protected]", "[email protected]"]
                 }
             ]
@@ -61,7 +61,7 @@ public class SubscriptionGroupsSerializationTests
                 new SubscriptionGroupUpdate
                 {
                     SubscriptionGroupId = "subscription_group_identifier",
-                    SubscriptionState = "subscribed",
+                    SubscriptionState = SubscriptionState.Subscribed,
                     Phones = ["+12223334444", "+15556667777"]
                 }
             ]
@@ -84,13 +84,13 @@ public class SubscriptionGroupsSerializationTests
                 new SubscriptionGroupUpdate
                 {
                     SubscriptionGroupId = "group_1",
-                    SubscriptionState = "subscribed",
+                    SubscriptionState = SubscriptionState.Subscribed,
                     ExternalIds = ["user1"]
                 },
                 new SubscriptionGroupUpdate
                 {
                     SubscriptionGroupId = "group_2",
-                    SubscriptionState = "unsubscribed",
+                    SubscriptionState = SubscriptionState.Unsubscribed,
                     ExternalIds = ["user2"]
                 }
             ]
@@ -113,7 +113,7 @@ public class SubscriptionGroupsSerializationTests
                 new SubscriptionGroupUpdate
                 {
                     SubscriptionGroupId = "subscription_group_identifier",
-                    SubscriptionState = "subscribed",
+                    SubscriptionState = SubscriptionState.Subscribed,
                     Phones = ["+12223334444"],
                     UseDoubleOptInLogic = true
                 }
