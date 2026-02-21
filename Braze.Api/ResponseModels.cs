@@ -71,7 +71,7 @@ internal sealed class ApiResponseJsonConverterFactory : JsonConverterFactory
             }
 
 
-            var value = root.Deserialize<T>();
+            var value = root.Deserialize<T>(options);
             return new InternalApiResponse<T>
             {
                 Message = message,
