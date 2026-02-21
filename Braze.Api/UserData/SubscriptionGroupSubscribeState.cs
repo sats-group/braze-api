@@ -17,5 +17,5 @@ public enum SubscriptionGroupSubscribeState
     /// In subscription group
     /// </summary>
     [JsonStringEnumMemberName("subscribed")]
-    Subscribed
+    Subscribed = 1,
 }

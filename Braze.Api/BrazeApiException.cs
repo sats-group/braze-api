@@ -13,8 +13,8 @@ public class BrazeApiException : Exception
     /// <summary>
     /// An exception thrown when the Braze API behaves unexpectedly.
     /// </summary>
-    /// <param name="innerException"></param>
     /// <param name="message"></param>
+    /// <param name="innerException"></param>
     public BrazeApiException(string message, Exception innerException) : base(message, innerException)
     {
     }
