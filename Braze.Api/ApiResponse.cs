@@ -50,4 +50,46 @@ public class ApiResponse<T>
     /// </summary>
     /// <remarks>The item type is subject to change, but no documentation on these error items have been found.</remarks>
     public List<JsonElement>? NonFatalErrors { get; }
+
+    /// <summary>
+    /// Creates a successful API response with the specified value.
+    /// </summary>
+    /// <param name="value">The response value.</param>
+    /// <param name="rateLimitingLimit">The rate limiting limit (default: 0).</param>
+    /// <param name="rateLimitingRemaining">The rate limiting remaining count (default: 0).</param>
+    /// <param name="rateLimitingReset">The rate limiting reset time in seconds (default: 0).</param>
+    /// <returns>A successful API response.</returns>
+    public static ApiResponse<T> CreateSuccess(
+        T value,
+        int rateLimitingLimit = 0,
+        int rateLimitingRemaining = 0,
+        int rateLimitingReset = 0) =>
+        new(value, null)
+        {
+            RateLimitingLimit = rateLimitingLimit,
+            RateLimitingRemaining = rateLimitingRemaining,
+            RateLimitingReset = rateLimitingReset,
+        };
+
+    /// <summary>
+    /// Creates an API response with non-fatal errors.
+    /// </summary>
+    /// <param name="errors">The list of non-fatal errors.</param>
+    /// <param name="value">The response value (optional).</param>
+    /// <param name="rateLimitingLimit">The rate limiting limit (default: 0).</param>
+    /// <param name="rateLimitingRemaining">The rate limiting remaining count (default: 0).</param>
+    /// <param name="rateLimitingReset">The rate limiting reset time in seconds (default: 0).</param>
+    /// <returns>An API response with errors.</returns>
+    public static ApiResponse<T> CreateWithErrors(
+        List<JsonElement> errors,
+        T? value = default,
+        int rateLimitingLimit = 0,
+        int rateLimitingRemaining = 0,
+        int rateLimitingReset = 0) =>
+        new(value, errors)
+        {
+            RateLimitingLimit = rateLimitingLimit,
+            RateLimitingRemaining = rateLimitingRemaining,
+            RateLimitingReset = rateLimitingReset,
+        };
 }

@@ -128,3 +128,69 @@ Run tests with:
 ```bash
 dotnet test
 ```
+
+### Mocking in Consumer Tests
+
+When writing unit tests for code that uses this library, you can mock the client interfaces and create `ApiResponse<T>` instances using the provided factory methods:
+
+```csharp
+using Braze.Api;
+using Braze.Api.UserData;
+using Moq;
+using Xunit;
+
+public class MyServiceTests
+{
+    [Fact]
+    public async Task MyService_CallsBrazeApi_Successfully()
+    {
+        // Arrange
+        var mockClient = new Mock<IUserDataClient>();
+        var expectedResponse = ApiResponse<TrackResponse>.CreateSuccess(
+            new TrackResponse 
+            { 
+                AttributesProcessed = 1,
+                EventsProcessed = 2 
+            },
+            rateLimitingLimit: 250000,
+            rateLimitingRemaining: 249999,
+            rateLimitingReset: 60
+        );
+        
+        mockClient
+            .Setup(x => x.Track(It.IsAny<TrackRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
+        var myService = new MyService(mockClient.Object);
+
+        // Act
+        var result = await myService.ProcessUserData();
+
+        // Assert
+        Assert.True(result);
+        mockClient.Verify(x => x.Track(It.IsAny<TrackRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task MyService_HandlesNonFatalErrors()
+    {
+        // Arrange
+        var mockClient = new Mock<IUserDataClient>();
+        var errors = new List<JsonElement> 
+        { 
+            JsonDocument.Parse(@"{""type"":""invalid_email"",""input"":""bad@email""}").RootElement 
+        };
+        var errorResponse = ApiResponse<TrackResponse>.CreateWithErrors(errors);
+        
+        mockClient
+            .Setup(x => x.Track(It.IsAny<TrackRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(errorResponse);
+
+        var myService = new MyService(mockClient.Object);
+
+        // Act & Assert
+        var result = await myService.ProcessUserData();
+        Assert.False(result);
+    }
+}
+```
