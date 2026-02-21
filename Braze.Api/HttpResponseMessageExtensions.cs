@@ -16,7 +16,7 @@ internal static class HttpResponseMessageExtensions
         InternalApiResponse<T>? response;
         try
         {
-            response = await responseMessage.Content.ReadFromJsonAsync<InternalApiResponse<T>>(cancellationToken);
+            response = await responseMessage.Content.ReadFromJsonAsync<InternalApiResponse<T>>(DefaultJsonSerializerOptions.Options, cancellationToken);
         }
         catch (JsonException ex)
         {
