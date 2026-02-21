@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Braze.Api.SubscriptionGroups;
 
 namespace Braze.Api.UserData;
 
@@ -64,7 +65,7 @@ public class UserAttribute : BrazeUserIdentifier
     /// </summary>
     [JsonPropertyName("email_subscribe")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public SubscribeState? EmailSubscribe { get; init; }
+    public EmailSubscribeState? EmailSubscribe { get; init; }
 
     /// <summary>
     /// Disables email open tracking.
@@ -134,7 +135,7 @@ public class UserAttribute : BrazeUserIdentifier
     /// </summary>
     [JsonPropertyName("push_subscribe")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public SubscribeState? PushSubscribe { get; init; }
+    public EmailSubscribeState? PushSubscribe { get; init; }
 
     /// <summary>
     /// The push tokens.
@@ -258,32 +259,14 @@ public class SubscriptionGroup
     /// The Id.
     /// </summary>
     [JsonPropertyName("subscription_group_id")]
-    public required string Id { get; init; }
+    [JsonConverter(typeof(GuidToLowerCaseStringConverter))]
+    public required Guid Id { get; init; }
 
     /// <summary>
     /// The subscription state.
     /// </summary>
     [JsonPropertyName("subscription_state")]
-    public required SubscribeGroupState State { get; init; }
-}
-
-/// <summary>
-/// The subscribe group state.
-/// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum SubscribeGroupState
-{
-    /// <summary>
-    /// Subscribed.
-    /// </summary>
-    [JsonStringEnumMemberName("subscribed")]
-    Subscribed = 1,
-
-    /// <summary>
-    /// Unsubscribed.
-    /// </summary>
-    [JsonStringEnumMemberName("unsubscribed")]
-    Unsubscribed = 2,
+    public required SubscriptionGroupSubscribeState State { get; init; }
 }
 
 /// <summary>
@@ -349,10 +332,10 @@ public enum Gender
 }
 
 /// <summary>
-/// The subscribe state.
+/// The overall email subscribe state for a user.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum SubscribeState
+public enum EmailSubscribeState
 {
     /// <summary>
     /// Explicitly registered to receive email messages.

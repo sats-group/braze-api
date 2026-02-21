@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -32,7 +32,8 @@ internal class UserDataClient(HttpClient httpClient) : IUserDataClient
             HttpMethod.Post,
             new Uri("users/track", UriKind.Relative))
         {
-            Content = JsonContent.Create(trackRequest)
+            Content = JsonContent.Create(trackRequest,
+                options: DefaultJsonSerializerOptions.Options)
         };
 
         using var responseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);

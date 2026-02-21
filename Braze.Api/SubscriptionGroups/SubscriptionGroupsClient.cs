@@ -16,7 +16,8 @@ internal class SubscriptionGroupsClient(HttpClient httpClient) : ISubscriptionGr
             HttpMethod.Post,
             new Uri("v2/subscription/status/set", UriKind.Relative))
         {
-            Content = JsonContent.Create(request)
+            Content = JsonContent.Create(request,
+                options: DefaultJsonSerializerOptions.Options)
         };
 
         using var responseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);

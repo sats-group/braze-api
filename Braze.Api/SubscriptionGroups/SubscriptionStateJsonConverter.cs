@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Braze.Api.SubscriptionGroups;
 
-internal class SubscriptionStateJsonConverter : JsonConverter<SubscriptionState>
+internal class SubscriptionStateJsonConverter : JsonConverter<SubscriptionGroupSubscribeState>
 {
     /// <summary>
     /// <inheritdoc/>
@@ -13,21 +13,21 @@ internal class SubscriptionStateJsonConverter : JsonConverter<SubscriptionState>
     /// <param name="typeToConvert"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public override SubscriptionState Read(
+    public override SubscriptionGroupSubscribeState Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
-        JsonSerializerOptions options) =>
-        Enum.Parse<SubscriptionState>(reader.GetString() ?? string.Empty, true);
+        JsonSerializerOptions options)
+        => reader.TokenType != JsonTokenType.String ? throw new JsonException("Expected a string, got " + reader.TokenType + " instead.") : Enum.Parse<SubscriptionGroupSubscribeState>(reader.GetString() ?? string.Empty, true);
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="subscriptionState"></param>
+    /// <param name="subscriptionGroupSubscriptionState"></param>
     /// <param name="options"></param>
     public override void Write(
         Utf8JsonWriter writer,
-        SubscriptionState subscriptionState,
+        SubscriptionGroupSubscribeState subscriptionGroupSubscriptionState,
         JsonSerializerOptions options) =>
-        writer.WriteStringValue(subscriptionState.ToString().ToLowerInvariant());
+        writer.WriteStringValue(subscriptionGroupSubscriptionState.ToString().ToLowerInvariant());
 }

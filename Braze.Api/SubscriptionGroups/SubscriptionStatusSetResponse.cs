@@ -10,7 +10,6 @@ public class SubscriptionStatusSetResponse
     /// <summary>
     /// A message describing the result of the operation.
     /// </summary>
-    [JsonPropertyName("message")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Message { get; init; }
 }

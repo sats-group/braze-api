@@ -10,7 +10,7 @@ namespace Braze.Api.SubscriptionGroups;
 #else
 [JsonConverter(typeof(SubscriptionStateJsonConverter))]
 #endif
-public enum SubscriptionState
+public enum SubscriptionGroupSubscribeState
 {
     /// <summary>
     /// Not in subscription group

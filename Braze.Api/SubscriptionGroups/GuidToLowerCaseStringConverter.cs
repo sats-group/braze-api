@@ -8,7 +8,7 @@ namespace Braze.Api.SubscriptionGroups;
 /// <summary>
 /// Explicitly converts Guids to lowercase strings ("D" format).
 /// </summary>
-public class GuidToLowerCaseStringConverter : JsonConverter<Guid>
+internal class GuidToLowerCaseStringConverter : JsonConverter<Guid>
 {
     /// <summary>
     /// Reads a Guid from the value or throws an exception if the value is null.
