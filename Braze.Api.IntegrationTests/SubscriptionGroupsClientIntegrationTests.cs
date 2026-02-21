@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Braze.Api.SubscriptionGroups;
+using Braze.Api.UserData;
 using Xunit;
 
 namespace Braze.Api.IntegrationTests;

@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json;
 using Braze.Api.SubscriptionGroups;
+using Braze.Api.UserData;
 using Xunit;
 
 namespace Braze.Api.Tests;
