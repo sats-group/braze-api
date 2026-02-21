@@ -28,13 +28,16 @@ internal class MockHttpMessageHandler : HttpMessageHandler
     /// <summary>
     /// Configure the next response to return.
     /// </summary>
-    public void ConfigureResponse(HttpStatusCode statusCode, string? content = null, Dictionary<string, string>? headers = null)
+    public void ConfigureResponse(
+        HttpStatusCode statusCode,
+        string? content = null,
+        Dictionary<string, string>? headers = null)
     {
         _responses.Enqueue(new ConfiguredResponse
         {
             StatusCode = statusCode,
             Content = content,
-            Headers = headers ?? new Dictionary<string, string>()
+            Headers = headers ?? new Dictionary<string, string>(),
         });
     }
 
@@ -83,7 +86,10 @@ internal class MockHttpMessageHandler : HttpMessageHandler
 
         var configuredResponse = _responses.Dequeue();
 
-        var response = new HttpResponseMessage(configuredResponse.StatusCode);
+        var response = new HttpResponseMessage(configuredResponse.StatusCode)
+        {
+            RequestMessage = request
+        };
 
         if (configuredResponse.Content != null)
         {
@@ -103,5 +109,6 @@ internal class MockHttpMessageHandler : HttpMessageHandler
         public required HttpStatusCode StatusCode { get; init; }
         public string? Content { get; init; }
         public required Dictionary<string, string> Headers { get; init; }
+        public HttpRequestMessage? Request { get; init; }
     }
 }

@@ -30,7 +30,7 @@ public class MessagesSendClientIntegrationTests
         // Assert
         Assert.NotNull(handler.LastRequest);
         handler.LastRequest.AssertMethod(HttpMethod.Post);
-        handler.LastRequest.AssertUri("campaigns/trigger/send");
+        handler.LastRequest.AssertUri("/campaigns/trigger/send");
         handler.LastRequest.AssertBearerToken("test-api-key");
         handler.LastRequest.AssertContentType("application/json");
     }

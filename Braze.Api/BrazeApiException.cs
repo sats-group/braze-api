@@ -8,8 +8,24 @@ namespace Braze.Api;
 /// <summary>
 /// An exception thrown by the Braze API.
 /// </summary>
-public class BrazeApiException(string message) : Exception(message)
+public class BrazeApiException : Exception
 {
+    /// <summary>
+    /// An exception thrown when the Braze API beahves unexpectedly.
+    /// </summary>
+    /// <param name="innerException"></param>
+    /// <param name="message"></param>
+    public BrazeApiException(string message, Exception innerException) : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// An exception thrown when the Braze API beahves unexpectedly.
+    /// </summary>
+    public BrazeApiException(string message) : base(message)
+    {
+    }
+
     /// <summary>
     /// Minor error messages.
     /// </summary>

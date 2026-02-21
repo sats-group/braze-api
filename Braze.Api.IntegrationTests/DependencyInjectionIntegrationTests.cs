@@ -173,13 +173,14 @@ public class DependencyInjectionIntegrationTests
         var services = new ServiceCollection();
         var configuration = CreateConfiguration("BrazeProduction");
         services.AddSingleton(configuration);
-        services.AddBrazeApi("production", "BrazeProduction");
+        var key = new { Key = "production" };
+        services.AddBrazeApi(key, "BrazeProduction", "BrazeProduction");
 
         var provider = services.BuildServiceProvider();
         var factory = provider.GetRequiredService<IBrazeProviderFactory>();
 
         // Act
-        var brazeProvider = factory.Create("production");
+        var brazeProvider = factory.Create(key);
 
         // Assert
         Assert.NotNull(brazeProvider.UserDataClient);

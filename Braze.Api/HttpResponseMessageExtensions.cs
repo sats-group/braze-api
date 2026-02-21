@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +13,15 @@ internal static class HttpResponseMessageExtensions
         CancellationToken cancellationToken)
         where T : class
     {
-        var response = await responseMessage.Content.ReadFromJsonAsync<InternalApiResponse<T>>(cancellationToken);
+        InternalApiResponse<T>? response;
+        try
+        {
+            response = await responseMessage.Content.ReadFromJsonAsync<InternalApiResponse<T>>(cancellationToken);
+        }
+        catch (JsonException ex)
+        {
+            throw new BrazeApiException("Unable to parse response from Braze when calling " + responseMessage.RequestMessage?.RequestUri, ex);
+        }
 
         if (!responseMessage.IsSuccessStatusCode)
         {

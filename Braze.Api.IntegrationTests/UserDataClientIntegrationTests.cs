@@ -41,7 +41,7 @@ public class UserDataClientIntegrationTests
         // Assert
         Assert.NotNull(handler.LastRequest);
         handler.LastRequest.AssertMethod(HttpMethod.Post);
-        handler.LastRequest.AssertUri("users/track");
+        handler.LastRequest.AssertUri("/users/track");
         handler.LastRequest.AssertBearerToken("test-api-key");
         handler.LastRequest.AssertContentType("application/json");
     }

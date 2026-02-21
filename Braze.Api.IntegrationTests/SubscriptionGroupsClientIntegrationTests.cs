@@ -39,7 +39,7 @@ public class SubscriptionGroupsClientIntegrationTests
         // Assert
         Assert.NotNull(handler.LastRequest);
         handler.LastRequest.AssertMethod(HttpMethod.Post);
-        handler.LastRequest.AssertUri("v2/subscription/status/set");
+        handler.LastRequest.AssertUri("/v2/subscription/status/set");
         handler.LastRequest.AssertBearerToken("test-api-key");
         handler.LastRequest.AssertContentType("application/json");
     }
