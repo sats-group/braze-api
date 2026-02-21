@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-using Braze.Api.SubscriptionGroups;
 
 namespace Braze.Api.UserData;
 
