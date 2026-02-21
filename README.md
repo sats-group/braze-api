@@ -110,3 +110,21 @@ The clients implemented in this package tries to replicate the logical structure
 | Subscription groups      | List and update both SMS and email subscription groups stored in the Braze dashboard. |                                              |
 | Templates                | Create and update templates for email messaging and Content Blocks.         |                                              |
 | User data                | Identify, track, and manage your users.                                     | Partially implemented (track)   |
+
+## Testing
+
+The project includes comprehensive test coverage:
+
+- **Unit Tests** (`Braze.Api.Tests`): Serialization and model validation tests
+- **Integration Tests** (`Braze.Api.IntegrationTests`): End-to-end tests that validate:
+  - HTTP request formatting (method, URI, headers, body)
+  - Response parsing and error handling
+  - All documented error scenarios (401, 403, 404, 400, 429, 5XX)
+  - Rate limiting header capture
+  - Dependency injection configuration
+  - JSON serialization compliance with Braze API spec
+
+Run tests with:
+```bash
+dotnet test
+```

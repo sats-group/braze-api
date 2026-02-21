@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Braze.Api.Tests" />
+    <InternalsVisibleTo Include="Braze.Api.IntegrationTests" />
   </ItemGroup>
 
   <ItemGroup>
