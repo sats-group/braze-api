@@ -65,7 +65,7 @@ public class UserAttribute : BrazeUserIdentifier
     /// </summary>
     [JsonPropertyName("email_subscribe")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public EmailSubscribeState? EmailSubscribe { get; init; }
+    public EmailAndPushSubscribeState? EmailSubscribe { get; init; }
 
     /// <summary>
     /// Disables email open tracking.
@@ -135,7 +135,7 @@ public class UserAttribute : BrazeUserIdentifier
     /// </summary>
     [JsonPropertyName("push_subscribe")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public EmailSubscribeState? PushSubscribe { get; init; }
+    public EmailAndPushSubscribeState? PushSubscribe { get; init; }
 
     /// <summary>
     /// The push tokens.
@@ -259,8 +259,7 @@ public class SubscriptionGroup
     /// The Id.
     /// </summary>
     [JsonPropertyName("subscription_group_id")]
-    [JsonConverter(typeof(GuidToLowerCaseStringConverter))]
-    public required Guid Id { get; init; }
+    public required string Id { get; init; }
 
     /// <summary>
     /// The subscription state.
@@ -332,19 +331,19 @@ public enum Gender
 }
 
 /// <summary>
-/// The overall email subscribe state for a user.
+/// Overall email subscribe state for a user (used for push and email)
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum EmailSubscribeState
+public enum EmailAndPushSubscribeState
 {
     /// <summary>
-    /// Explicitly registered to receive email messages.
+    /// Explicitly registered to receive email or push messages.
     /// </summary>
     [JsonStringEnumMemberName("opted_in")]
     OptedIn = 1,
 
     /// <summary>
-    /// Explicitly opted out of email messages.
+    /// Explicitly opted out.
     /// </summary>
     [JsonStringEnumMemberName("unsubscribed")]
     Unsubscribed = 2,

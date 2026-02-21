@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Braze.Api.SubscriptionGroups;
@@ -12,8 +11,7 @@ public class SubscriptionGroupUpdate
     /// <summary>
     /// The ID of the subscription group.
     /// </summary>
-    [JsonConverter(typeof(GuidToLowerCaseStringConverter))]
-    public required Guid SubscriptionGroupId { get; init; }
+    public required string SubscriptionGroupId { get; init; }
 
     /// <summary>
     /// The subscription state. Available values are "unsubscribed" (not in subscription group) or "subscribed" (in subscription group).

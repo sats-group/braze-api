@@ -11,7 +11,7 @@ namespace Braze.Api;
 public class BrazeApiException : Exception
 {
     /// <summary>
-    /// An exception thrown when the Braze API beahves unexpectedly.
+    /// An exception thrown when the Braze API behaves unexpectedly.
     /// </summary>
     /// <param name="innerException"></param>
     /// <param name="message"></param>
@@ -20,7 +20,7 @@ public class BrazeApiException : Exception
     }
 
     /// <summary>
-    /// An exception thrown when the Braze API beahves unexpectedly.
+    /// An exception thrown when the Braze API behaves unexpectedly.
     /// </summary>
     public BrazeApiException(string message) : base(message)
     {
