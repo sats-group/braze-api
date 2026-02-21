@@ -85,6 +85,13 @@ This is a .NET client library providing strongly typed API clients for Braze's A
 - PRs are tested automatically on push to main branch
 - Releases are triggered by tags matching `release/*` pattern
 
+**IMPORTANT - Avoiding BOM Issues:**
+- **NEVER use `git add .` or `git add -A`** - these may stage unintended BOM changes
+- **ALWAYS stage specific files**: `git add file1.cs file2.cs` or `git add Directory/`
+- Before committing, verify with `git diff --cached` that only intended changes are staged
+- If BOM changes slip through, reset and re-stage: `git reset HEAD~1 --soft && git restore --staged . && git add <specific-files>`
+- The `.gitattributes` file configures UTF-8 with BOM for C# files - avoid changing encoding when editing
+
 ## Important Notes
 
 - Do not modify `InternalsVisibleTo` without good reason

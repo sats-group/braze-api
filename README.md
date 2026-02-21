@@ -97,16 +97,34 @@ await userDataClient.Track(track, CancellationToken.None);
 
 The clients implemented in this package tries to replicate the logical structure in the [Braze API documentation](https://www.braze.com/docs/api/basics#braze-rest-api-collection).
 
-| Feature                  | Description                                                                 | Status                                       |
-|--------------------------|-----------------------------------------------------------------------------|----------------------------------------------|
-| Catalogs                 | Create and manage catalogs and catalog items to reference in your Braze campaigns. |                                              |
-| Cloud Data Ingestion     | Manage your data warehouse integrations and syncs.                          |                                              |
-| Email lists and addresses| Set up and manage bi-directional sync between Braze and your email systems. |                                              |
-| Export                   | Access and export various details of your campaigns, Canvases, KPIs, and more. |                                              |
-| Messages                 | Schedule, send, and manage your campaigns and Canvases.                     | Partially implmented (API-triggered campaign) |
-| Preference center        | Build your preference center and update the styling of it.                  |                                              |
-| SCIM                     | Manage user identities in cloud-based applications and services.            |                                              |
-| SMS                      | Manage your users’ phone numbers in your subscription groups.               |                                              |
-| Subscription groups      | List and update both SMS and email subscription groups stored in the Braze dashboard. |                                              |
-| Templates                | Create and update templates for email messaging and Content Blocks.         |                                              |
-| User data                | Identify, track, and manage your users.                                     | Partially implemented (track)   |
+| Feature                  | Description                                                                 | Status                                         |
+|--------------------------|-----------------------------------------------------------------------------|------------------------------------------------|
+| Catalogs                 | Create and manage catalogs and catalog items to reference in your Braze campaigns. |                                                |
+| Cloud Data Ingestion     | Manage your data warehouse integrations and syncs.                          |                                                |
+| Email lists and addresses| Set up and manage bi-directional sync between Braze and your email systems. |                                                |
+| Export                   | Access and export various details of your campaigns, Canvases, KPIs, and more. |                                                |
+| Messages                 | Schedule, send, and manage your campaigns and Canvases.                     | Partially implemented (API-triggered campaign) |
+| Preference center        | Build your preference center and update the styling of it.                  |                                                |
+| SCIM                     | Manage user identities in cloud-based applications and services.            |                                                |
+| SMS                      | Manage your users’ phone numbers in your subscription groups.               |                                                |
+| Subscription groups      | List and update both SMS and email subscription groups stored in the Braze dashboard. | Update implemented.                            |
+| Templates                | Create and update templates for email messaging and Content Blocks.         |                                                |
+| User data                | Identify, track, and manage your users.                                     | Partially implemented (track)                  |
+
+## Testing
+
+The project includes comprehensive test coverage:
+
+- **Unit Tests** (`Braze.Api.Tests`): Serialization and model validation tests
+- **Integration Tests** (`Braze.Api.IntegrationTests`): End-to-end tests that validate:
+  - HTTP request formatting (method, URI, headers, body)
+  - Response parsing and error handling
+  - All documented error scenarios (401, 403, 404, 400, 429, 5XX)
+  - Rate limiting header capture
+  - Dependency injection configuration
+  - JSON serialization compliance with Braze API spec
+
+Run tests with:
+```bash
+dotnet test
+```

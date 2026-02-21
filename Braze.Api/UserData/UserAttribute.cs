@@ -64,7 +64,7 @@ public class UserAttribute : BrazeUserIdentifier
     /// </summary>
     [JsonPropertyName("email_subscribe")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public SubscribeState? EmailSubscribe { get; init; }
+    public EmailSubscribeState? EmailSubscribe { get; init; }
 
     /// <summary>
     /// Disables email open tracking.
@@ -134,7 +134,7 @@ public class UserAttribute : BrazeUserIdentifier
     /// </summary>
     [JsonPropertyName("push_subscribe")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public SubscribeState? PushSubscribe { get; init; }
+    public PushSubscribeState? PushSubscribe { get; init; }
 
     /// <summary>
     /// The push tokens.
@@ -264,26 +264,7 @@ public class SubscriptionGroup
     /// The subscription state.
     /// </summary>
     [JsonPropertyName("subscription_state")]
-    public required SubscribeGroupState State { get; init; }
-}
-
-/// <summary>
-/// The subscribe group state.
-/// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum SubscribeGroupState
-{
-    /// <summary>
-    /// Subscribed.
-    /// </summary>
-    [JsonStringEnumMemberName("subscribed")]
-    Subscribed = 1,
-
-    /// <summary>
-    /// Unsubscribed.
-    /// </summary>
-    [JsonStringEnumMemberName("unsubscribed")]
-    Unsubscribed = 2,
+    public required SubscriptionGroupSubscribeState State { get; init; }
 }
 
 /// <summary>
@@ -349,19 +330,44 @@ public enum Gender
 }
 
 /// <summary>
-/// The subscribe state.
+/// Overall email subscribe state for a user
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum SubscribeState
+public enum EmailSubscribeState
 {
     /// <summary>
-    /// Explicitly registered to receive email messages.
+    /// Explicitly registered to receive email
     /// </summary>
     [JsonStringEnumMemberName("opted_in")]
     OptedIn = 1,
 
     /// <summary>
-    /// Explicitly opted out of email messages.
+    /// Explicitly opted out.
+    /// </summary>
+    [JsonStringEnumMemberName("unsubscribed")]
+    Unsubscribed = 2,
+
+    /// <summary>
+    /// Neither opted in nor out.
+    /// </summary>
+    [JsonStringEnumMemberName("subscribed")]
+    Subscribed = 3,
+}
+
+/// <summary>
+/// Overall push subscribe state for a user
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum PushSubscribeState
+{
+    /// <summary>
+    /// Explicitly registered to receive push messages.
+    /// </summary>
+    [JsonStringEnumMemberName("opted_in")]
+    OptedIn = 1,
+
+    /// <summary>
+    /// Explicitly opted out.
     /// </summary>
     [JsonStringEnumMemberName("unsubscribed")]
     Unsubscribed = 2,

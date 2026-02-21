@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Braze.Api.Messages.Send;
+using Braze.Api.SubscriptionGroups;
 using Braze.Api.UserData;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -38,6 +39,11 @@ public interface IBrazeProvider
     /// Gets the <see cref="IMessagesSendClient"/> from this provider.
     /// </summary>
     IMessagesSendClient MessagesSendClient { get; }
+
+    /// <summary>
+    /// Gets the <see cref="ISubscriptionGroupsClient"/> from this provider.
+    /// </summary>
+    ISubscriptionGroupsClient SubscriptionGroupsClient { get; }
 }
 
 internal class BrazeProvider(IServiceProvider provider, object? key) : IBrazeProvider
@@ -52,9 +58,16 @@ internal class BrazeProvider(IServiceProvider provider, object? key) : IBrazePro
             ? provider.GetRequiredKeyedService<IMessagesSendClient>(key)
             : provider.GetRequiredService<IMessagesSendClient>());
 
+    private readonly Lazy<ISubscriptionGroupsClient> _subscriptionGroupsClient = new(() =>
+        key is not null
+            ? provider.GetRequiredKeyedService<ISubscriptionGroupsClient>(key)
+            : provider.GetRequiredService<ISubscriptionGroupsClient>());
+
     public IUserDataClient UserDataClient => _userDataClient.Value;
 
     public IMessagesSendClient MessagesSendClient => _messagesSendClient.Value;
+
+    public ISubscriptionGroupsClient SubscriptionGroupsClient => _subscriptionGroupsClient.Value;
 }
 
 /// <summary>

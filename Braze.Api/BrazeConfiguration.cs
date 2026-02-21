@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
 using Braze.Api.Messages.Send;
+using Braze.Api.SubscriptionGroups;
 using Braze.Api.UserData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -38,6 +39,7 @@ public static class BrazeConfiguration
         services
             .AddKeyedBraze<IUserDataClient, UserDataClient>(key, httpClientName)
             .AddKeyedBraze<IMessagesSendClient, MessagesSendClient>(key, httpClientName)
+            .AddKeyedBraze<ISubscriptionGroupsClient, SubscriptionGroupsClient>(key, httpClientName)
             .AddBrazeProviderFactory();
 
         return services.AddHttpClient(
@@ -77,6 +79,7 @@ public static class BrazeConfiguration
         services
             .AddBrazeClient<IUserDataClient, UserDataClient>(httpClientName)
             .AddBrazeClient<IMessagesSendClient, MessagesSendClient>(httpClientName)
+            .AddBrazeClient<ISubscriptionGroupsClient, SubscriptionGroupsClient>(httpClientName)
             .AddBrazeProviderFactory();
 
         return services.AddHttpClient(

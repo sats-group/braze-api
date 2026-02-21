@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
@@ -39,7 +39,8 @@ internal class MessagesSendClient(HttpClient httpClient) : IMessagesSendClient
             HttpMethod.Post,
             new Uri("campaigns/trigger/send", UriKind.Relative))
         {
-            Content = JsonContent.Create(triggeredCampaign)
+            Content = JsonContent.Create(triggeredCampaign,
+                options: DefaultJsonSerializerOptions.Options)
         };
 
         using var responseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
