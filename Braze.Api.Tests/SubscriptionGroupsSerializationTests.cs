@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Text.Json;
 using Braze.Api.SubscriptionGroups;
 using Xunit;
@@ -16,7 +16,7 @@ public class SubscriptionGroupsSerializationTests
             [
                 new SubscriptionGroupUpdate
                 {
-                    SubscriptionGroupId = "subscription_group_identifier",
+                    SubscriptionGroupId = Guid.NewGuid(),
                     SubscriptionState = SubscriptionState.Subscribed,
                     ExternalIds = ["example-user", "[email protected]"]
                 }
@@ -25,6 +25,7 @@ public class SubscriptionGroupsSerializationTests
 
         var json = JsonSerializer.Serialize(request);
         var expected = """{"subscription_groups":[{"subscription_group_id":"subscription_group_identifier","subscription_state":"subscribed","external_ids":["example-user","[email protected]"]}]}""";
+        expected = expected.Replace("subscription_group_identifier", request.SubscriptionGroups[0].SubscriptionGroupId.ToString("D"));
 
         Assert.Equal(expected, json);
     }
@@ -38,7 +39,7 @@ public class SubscriptionGroupsSerializationTests
             [
                 new SubscriptionGroupUpdate
                 {
-                    SubscriptionGroupId = "subscription_group_identifier",
+                    SubscriptionGroupId = Guid.NewGuid(),
                     SubscriptionState = SubscriptionState.Subscribed,
                     Emails = ["[email protected]", "[email protected]"]
                 }
@@ -47,7 +48,7 @@ public class SubscriptionGroupsSerializationTests
 
         var json = JsonSerializer.Serialize(request);
         var expected = """{"subscription_groups":[{"subscription_group_id":"subscription_group_identifier","subscription_state":"subscribed","emails":["[email protected]","[email protected]"]}]}""";
-
+        expected = expected.Replace("subscription_group_identifier", request.SubscriptionGroups[0].SubscriptionGroupId.ToString("D"));
         Assert.Equal(expected, json);
     }
 
@@ -60,7 +61,7 @@ public class SubscriptionGroupsSerializationTests
             [
                 new SubscriptionGroupUpdate
                 {
-                    SubscriptionGroupId = "subscription_group_identifier",
+                    SubscriptionGroupId = Guid.NewGuid(),
                     SubscriptionState = SubscriptionState.Subscribed,
                     Phones = ["+12223334444", "+15556667777"]
                 }
@@ -68,7 +69,10 @@ public class SubscriptionGroupsSerializationTests
         };
 
         var json = JsonSerializer.Serialize(request);
-        var expected = JsonDocument.Parse("""{"subscription_groups":[{"subscription_group_id":"subscription_group_identifier","subscription_state":"subscribed","phones":["+12223334444","+15556667777"]}]}""").RootElement;
+        var expectedJson =
+            """{"subscription_groups":[{"subscription_group_id":"subscription_group_identifier","subscription_state":"subscribed","phones":["+12223334444","+15556667777"]}]}""";
+        expectedJson = expectedJson.Replace("subscription_group_identifier", request.SubscriptionGroups[0].SubscriptionGroupId.ToString("D"));
+        var expected = JsonDocument.Parse(expectedJson).RootElement;
         var actual = JsonDocument.Parse(json).RootElement;
 
         Assert.True(JsonElement.DeepEquals(expected, actual), $"'{actual}' not equal to '{expected}'");
@@ -77,19 +81,21 @@ public class SubscriptionGroupsSerializationTests
     [Fact]
     public void SubscriptionStatusSetRequest_WithMultipleGroups_SerializesToJson()
     {
+        var group1 = Guid.NewGuid();
+        var group2 = Guid.NewGuid();
         var request = new SubscriptionStatusSetRequest
         {
             SubscriptionGroups =
             [
                 new SubscriptionGroupUpdate
                 {
-                    SubscriptionGroupId = "group_1",
+                    SubscriptionGroupId = group1,
                     SubscriptionState = SubscriptionState.Subscribed,
                     ExternalIds = ["user1"]
                 },
                 new SubscriptionGroupUpdate
                 {
-                    SubscriptionGroupId = "group_2",
+                    SubscriptionGroupId = group2,
                     SubscriptionState = SubscriptionState.Unsubscribed,
                     ExternalIds = ["user2"]
                 }
@@ -112,7 +118,7 @@ public class SubscriptionGroupsSerializationTests
             [
                 new SubscriptionGroupUpdate
                 {
-                    SubscriptionGroupId = "subscription_group_identifier",
+                    SubscriptionGroupId = Guid.NewGuid(),
                     SubscriptionState = SubscriptionState.Subscribed,
                     Phones = ["+12223334444"],
                     UseDoubleOptInLogic = true
@@ -121,7 +127,10 @@ public class SubscriptionGroupsSerializationTests
         };
 
         var json = JsonSerializer.Serialize(request);
-        var expected = JsonDocument.Parse("""{"subscription_groups":[{"subscription_group_id":"subscription_group_identifier","subscription_state":"subscribed","phones":["+12223334444"],"use_double_opt_in_logic":true}]}""").RootElement;
+        var expectedJson =
+            """{"subscription_groups":[{"subscription_group_id":"subscription_group_identifier","subscription_state":"subscribed","phones":["+12223334444"],"use_double_opt_in_logic":true}]}""";
+        expectedJson = expectedJson.Replace("subscription_group_identifier", request.SubscriptionGroups[0].SubscriptionGroupId.ToString("D"));
+        var expected = JsonDocument.Parse(expectedJson).RootElement;
         var actual = JsonDocument.Parse(json).RootElement;
 
         Assert.True(JsonElement.DeepEquals(expected, actual), $"'{actual}' not equal to '{expected}'");
