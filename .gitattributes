@@ -1,0 +1,43 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# C# source files
+*.cs text eol=lf encoding=utf-8-bom diff=csharp
+
+# Visual Basic source files
+*.vb text eol=lf encoding=utf-8-bom
+
+# XML project files
+*.csproj text eol=lf encoding=utf-8
+*.vbproj text eol=lf encoding=utf-8
+*.fsproj text eol=lf encoding=utf-8
+*.dbproj text eol=lf encoding=utf-8
+*.sln text eol=lf encoding=utf-8
+
+# XML config files  
+*.props text eol=lf encoding=utf-8
+*.targets text eol=lf encoding=utf-8
+*.config text eol=lf encoding=utf-8
+*.nuspec text eol=lf encoding=utf-8
+
+# JSON files
+*.json text eol=lf encoding=utf-8
+
+# Markdown files
+*.md text eol=lf encoding=utf-8
+
+# Shell scripts
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Windows scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=lf
+
+# Binary files
+*.dll binary
+*.exe binary
+*.nupkg binary
+*.snk binary
+*.pfx binary
