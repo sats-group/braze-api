@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Braze.Api.Messages.Send;
@@ -51,4 +51,14 @@ public class TriggeredCampaign
     [JsonPropertyName("broadcast")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Broadcast { get; init; }
+
+    /// <summary>
+    /// Optional array of file attachments for the campaign.
+    /// If broadcast is set to true, attachments cannot be included.
+    /// Each attachment must have a file_name and url.
+    /// Files up to 2 MB are supported.
+    /// </summary>
+    [JsonPropertyName("attachments")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<Attachment>? Attachments { get; init; }
 }
