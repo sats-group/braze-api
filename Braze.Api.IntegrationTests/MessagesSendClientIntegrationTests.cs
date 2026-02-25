@@ -138,14 +138,14 @@ public class MessagesSendClientIntegrationTests
         var request = new TriggeredCampaign
         {
             CampaignId = "campaign-123",
-            Attachments =
-            [
+            Attachments = new List<Attachment>
+            {
                 new Attachment
                 {
                     FileName = "test-document.pdf",
                     Url = new Uri("https://example.com/test-document.pdf")
                 }
-            ]
+            }
         };
 
         // Act
