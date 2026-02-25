@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -128,6 +129,41 @@ public class MessagesSendClientIntegrationTests
     }
 
     [Fact]
+    public async Task TriggerCampaign_WithAttachments_SerializesCorrectly()
+    {
+        // Arrange
+        var (client, handler) = TestClientFactory.CreateMessagesSendClient();
+        handler.ConfigureSuccessResponse(@"{""message"": ""success"", ""dispatch_id"": ""dispatch-123""}");
+
+        var request = new TriggeredCampaign
+        {
+            CampaignId = "campaign-123",
+            Attachments =
+            [
+                new Attachment
+                {
+                    FileName = "test-document.pdf",
+                    Url = new Uri("https://example.com/test-document.pdf")
+                }
+            ]
+        };
+
+        // Act
+        await client.TriggerCampaign(request, default);
+
+        // Assert
+        var body = await handler.LastRequest!.ReadBodyAsJson();
+        var root = body.RootElement;
+
+        HttpRequestAssertions.AssertJsonPropertyExists(root, "attachments");
+        var attachments = root.GetProperty("attachments");
+        Assert.Equal(JsonValueKind.Array, attachments.ValueKind);
+        Assert.Equal(1, attachments.GetArrayLength());
+        HttpRequestAssertions.AssertJsonProperty(attachments[0], "file_name", "test-document.pdf");
+        HttpRequestAssertions.AssertJsonProperty(attachments[0], "url", "https://example.com/test-document.pdf");
+    }
+
+    [Fact]
     public async Task TriggerCampaign_SuccessResponse_ReturnsDispatchId()
     {
         // Arrange
@@ -180,5 +216,6 @@ public class MessagesSendClientIntegrationTests
         HttpRequestAssertions.AssertJsonPropertyDoesNotExist(root, "recipients");
         HttpRequestAssertions.AssertJsonPropertyDoesNotExist(root, "trigger_properties");
         HttpRequestAssertions.AssertJsonPropertyDoesNotExist(root, "broadcast");
+        HttpRequestAssertions.AssertJsonPropertyDoesNotExist(root, "attachments");
     }
 }

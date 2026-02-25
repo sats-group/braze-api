@@ -51,4 +51,11 @@ public class TriggeredCampaign
     [JsonPropertyName("broadcast")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Broadcast { get; init; }
+
+    /// <summary>
+    /// Attachments to send with the message.
+    /// </summary>
+    [JsonPropertyName("attachments")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<Attachment>? Attachments { get; init; } = null;
 }
