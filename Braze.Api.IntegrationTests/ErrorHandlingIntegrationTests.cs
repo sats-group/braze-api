@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Braze.Api.UserData;
@@ -117,7 +118,7 @@ public class ErrorHandlingIntegrationTests
         var exception = await Assert.ThrowsAsync<BrazeApiException>(() => client.Track(request));
         Assert.Equal("No Recipients", exception.Message);
         Assert.NotNull(exception.Errors);
-        Assert.Equal(2, exception.Errors.Count);
+        Assert.Equal(2, exception.Errors.Count());
     }
 
     [Fact]
@@ -287,8 +288,8 @@ public class ErrorHandlingIntegrationTests
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<BrazeApiException>(() => client.Track(request));
-        Assert.Contains("Unable to parse response from Braze", exception.Message);
-        Assert.Contains("users/track", exception.Message);
+        Assert.Contains("Unknown error response returned from Braze", exception.Message);
+        Assert.Contains("users/track", exception.Endpoint?.ToString());
     }
 
     #endregion

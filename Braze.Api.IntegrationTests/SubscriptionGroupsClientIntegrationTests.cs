@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -77,7 +78,7 @@ public class SubscriptionGroupsClientIntegrationTests
         Assert.Equal(JsonValueKind.Array, groups.ValueKind);
 
         var firstGroup = groups[0];
-        HttpRequestAssertions.AssertJsonProperty(firstGroup, "subscription_group_id", request.SubscriptionGroups[0].SubscriptionGroupId);
+        HttpRequestAssertions.AssertJsonProperty(firstGroup, "subscription_group_id", request.SubscriptionGroups.ElementAt(0).SubscriptionGroupId);
         HttpRequestAssertions.AssertJsonProperty(firstGroup, "subscription_state", "subscribed");
 
         HttpRequestAssertions.AssertJsonPropertyExists(firstGroup, "external_ids");
@@ -226,7 +227,7 @@ public class SubscriptionGroupsClientIntegrationTests
         var groups = body.RootElement.GetProperty("subscription_groups");
 
         Assert.Equal(2, groups.GetArrayLength());
-        HttpRequestAssertions.AssertJsonProperty(groups[0], "subscription_group_id", request.SubscriptionGroups[0].SubscriptionGroupId);
-        HttpRequestAssertions.AssertJsonProperty(groups[1], "subscription_group_id", request.SubscriptionGroups[1].SubscriptionGroupId);
+        HttpRequestAssertions.AssertJsonProperty(groups[0], "subscription_group_id", request.SubscriptionGroups.ElementAt(0).SubscriptionGroupId);
+        HttpRequestAssertions.AssertJsonProperty(groups[1], "subscription_group_id", request.SubscriptionGroups.ElementAt(1).SubscriptionGroupId);
     }
 }

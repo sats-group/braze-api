@@ -1,5 +1,4 @@
 ﻿using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,37 +12,77 @@ internal static class HttpResponseMessageExtensions
         CancellationToken cancellationToken)
         where T : class
     {
-        InternalApiResponse<T>? response;
-        try
-        {
-            response = await responseMessage.Content.ReadFromJsonAsync<InternalApiResponse<T>>(DefaultJsonSerializerOptions.Options, cancellationToken);
-        }
-        catch (JsonException ex)
-        {
-            throw new BrazeApiException("Unable to parse response from Braze when calling " + responseMessage.RequestMessage?.RequestUri, ex);
-        }
-
+        var responseBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         if (!responseMessage.IsSuccessStatusCode)
         {
-            var exceptionMessage =
-                response?.Message
-                ?? $"Unknown error while sending request to Braze: {responseMessage.RequestMessage?.Method} {responseMessage.RequestMessage?.RequestUri}.";
-
-            throw new BrazeApiException(exceptionMessage)
+            BrazeErrorResponse? errorResponse;
+            try
             {
-                HttpStatusCode = responseMessage.StatusCode,
-                Errors = response?.Errors,
-                RateLimitingRetryAfter = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Retry-After"),
+                errorResponse =
+                    JsonSerializer.Deserialize<BrazeErrorResponse>(responseBody, DefaultJsonSerializerOptions.Options);
+            }
+            catch (JsonException)
+            {
+                errorResponse = null;
+            }
+
+            if (errorResponse is not null)
+            {
+                throw new BrazeApiException(errorResponse.Message ?? "Unknown error response returned from Braze")
+                {
+                    HttpStatusCode = responseMessage.StatusCode,
+                    Errors = errorResponse.Errors,
+                    RateLimitingRetryAfter = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Retry-After"),
+                    Endpoint = responseMessage.RequestMessage?.RequestUri
+                };
+            }
+
+            throw new BrazeApiException(
+                $"Unknown error response returned from Braze: {responseMessage.RequestMessage?.Method} {responseMessage.RequestMessage?.RequestUri}: {responseBody}")
+            {
+                Endpoint = responseMessage.RequestMessage?.RequestUri
             };
         }
 
+        var response = GetResponseOrThrow<T>(responseMessage, responseBody);
+
         return new ApiResponse<T>(
-            response?.Value,
-            response?.Errors)
+            response.Value,
+            response.Errors)
         {
             RateLimitingLimit = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Limit"),
             RateLimitingRemaining = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Remaining"),
             RateLimitingReset = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Reset"),
         };
+    }
+
+    private static InternalApiResponse<T> GetResponseOrThrow<T>(
+        HttpResponseMessage responseMessage,
+        string responseBody) where T : class
+    {
+        InternalApiResponse<T>? response;
+        try
+        {
+            response = JsonSerializer.Deserialize<InternalApiResponse<T>>(responseBody, DefaultJsonSerializerOptions.Options);
+            if (response is null)
+            {
+                throw new BrazeApiException("Unable to parse response from Braze when calling " +
+                                            responseMessage.RequestMessage?.RequestUri + ", got body: " + responseBody)
+                {
+                    Endpoint = responseMessage.RequestMessage?.RequestUri
+                };
+            }
+        }
+        catch (JsonException ex)
+        {
+            throw new BrazeApiException(
+                "Unable to parse response from Braze when calling " + responseMessage.RequestMessage?.RequestUri +
+                ", got body: " + responseBody, ex)
+            {
+                Endpoint = responseMessage.RequestMessage?.RequestUri
+            };
+        }
+
+        return response;
     }
 }

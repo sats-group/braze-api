@@ -29,6 +29,12 @@ public class DispatchId
     /// </summary>
     [JsonPropertyName("dispatch_id")]
     public required string Id { get; init; }
+
+    /// <summary>
+    /// Response message from braze
+    /// </summary>
+    [JsonPropertyName("message")]
+    public string? Message { get; init; }
 }
 
 internal class MessagesSendClient(HttpClient httpClient) : IMessagesSendClient
