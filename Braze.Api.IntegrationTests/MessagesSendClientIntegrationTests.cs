@@ -218,4 +218,30 @@ public class MessagesSendClientIntegrationTests
         HttpRequestAssertions.AssertJsonPropertyDoesNotExist(root, "broadcast");
         HttpRequestAssertions.AssertJsonPropertyDoesNotExist(root, "attachments");
     }
+
+    [Fact]
+    public async Task TriggerCampaign_InvalidRecipientField_HandlesErrorResponse()
+    {
+        // Arrange
+        // Arrange
+        var (client, handler) = TestClientFactory.CreateMessagesSendClient();
+        handler.ConfigureErrorResponse(@"{""message"": ""The file_name field for email attachments must not contain an extension. We will supply the correct extension based on the content-type of the url.""}");
+
+        var request = new TriggeredCampaign
+        {
+            CampaignId = "campaign-123",
+            Attachments = [new Attachment()
+            {
+                FileName = "TestFile.pdf",
+                Url = new Uri("https://example.com/pdf-file.pdf"),
+            }]
+            // Other properties are null
+        };
+
+        // Act
+        var response = await client.TriggerCampaign(request, default);
+
+        // Assert
+        Assert.False(response.Success);
+    }
 }

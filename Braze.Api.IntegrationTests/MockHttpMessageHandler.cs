@@ -66,6 +66,14 @@ internal class MockHttpMessageHandler : HttpMessageHandler
     }
 
     /// <summary>
+    /// Configure an error response.
+    /// </summary>
+    public void ConfigureErrorResponse(string content, int statusCode = 400)
+    {
+        ConfigureResponse((HttpStatusCode)statusCode, content);
+    }
+
+    /// <summary>
     /// Reset the handler, clearing all captured requests and configured responses.
     /// </summary>
     public void Reset()

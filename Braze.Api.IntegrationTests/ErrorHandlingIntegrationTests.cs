@@ -287,7 +287,7 @@ public class ErrorHandlingIntegrationTests
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<BrazeApiException>(() => client.Track(request));
-        Assert.Contains("Unable to parse response from Braze", exception.Message);
+        Assert.Contains("Unknown error response returned from Braze", exception.Message);
         Assert.Contains("users/track", exception.Message);
     }
 
