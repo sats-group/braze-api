@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,20 +13,18 @@ internal static class HttpResponseMessageExtensions
         CancellationToken cancellationToken)
         where T : class
     {
-        InternalApiResponse<T>? response;
-
+        var responseBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         if (!responseMessage.IsSuccessStatusCode)
         {
             var errorResponse =
-                await responseMessage.Content.ReadFromJsonAsync<BrazeErrorResponse>(
-                    DefaultJsonSerializerOptions.Options, cancellationToken);
+                JsonSerializer.Deserialize<BrazeErrorResponse>(responseBody, DefaultJsonSerializerOptions.Options);
 
             if (errorResponse is not null)
             {
                 throw new BrazeApiException(errorResponse.Message ?? "Unknown error response returned from Braze")
                 {
                     HttpStatusCode = responseMessage.StatusCode,
-                    Errors = errorResponse?.Errors,
+                    Errors = errorResponse.Errors,
                     RateLimitingRetryAfter = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Retry-After"),
                 };
             }
@@ -38,11 +35,11 @@ internal static class HttpResponseMessageExtensions
 
         }
 
-        response = await GetResponseOrThrow<T>(responseMessage, cancellationToken);
+        var response = GetResponseOrThrow<T>(responseMessage, responseBody);
 
         return new ApiResponse<T>(
-            response?.Value,
-            response?.Errors)
+            response.Value,
+            response.Errors)
         {
             RateLimitingLimit = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Limit"),
             RateLimitingRemaining = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Remaining"),
@@ -50,22 +47,21 @@ internal static class HttpResponseMessageExtensions
         };
     }
 
-    private static async Task<InternalApiResponse<T>?> GetResponseOrThrow<T>(HttpResponseMessage responseMessage,
-        CancellationToken cancellationToken) where T : class
+    private static InternalApiResponse<T> GetResponseOrThrow<T>(
+        HttpResponseMessage responseMessage,
+        string responseBody) where T : class
     {
         InternalApiResponse<T>? response;
         try
         {
-            response = await responseMessage.Content.ReadFromJsonAsync<InternalApiResponse<T>>(DefaultJsonSerializerOptions.Options, cancellationToken);
+            response = JsonSerializer.Deserialize<InternalApiResponse<T>>(responseBody, DefaultJsonSerializerOptions.Options);
             if (response is null)
             {
-                var responseBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
                 throw new BrazeApiException("Unable to parse response from Braze when calling " + responseMessage.RequestMessage?.RequestUri + ", got body: " + responseBody);
             }
         }
         catch (JsonException ex)
         {
-            var responseBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
             throw new BrazeApiException("Unable to parse response from Braze when calling " + responseMessage.RequestMessage?.RequestUri + ", got body: " + responseBody, ex);
         }
 
@@ -75,6 +71,6 @@ internal static class HttpResponseMessageExtensions
 
 internal class BrazeErrorResponse
 {
-    public string? Message { get; set; }
+    public string? Message { get; init; }
     public List<JsonElement>? Errors { get; init; }
 }
