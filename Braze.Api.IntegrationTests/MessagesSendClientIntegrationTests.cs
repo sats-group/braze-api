@@ -220,12 +220,12 @@ public class MessagesSendClientIntegrationTests
     }
 
     [Fact]
-    public async Task TriggerCampaign_InvalidRecipientField_HandlesErrorResponse()
+    public async Task TriggerCampaign_InvalidAttachmentsFileName_HandlesErrorResponse()
     {
         // Arrange
-        // Arrange
         var (client, handler) = TestClientFactory.CreateMessagesSendClient();
-        handler.ConfigureErrorResponse(@"{""message"": ""The file_name field for email attachments must not contain an extension. We will supply the correct extension based on the content-type of the url.""}");
+        handler.ConfigureErrorResponse(
+            @"{""message"": ""The file_name field for email attachments must not contain an extension. We will supply the correct extension based on the content-type of the url.""}");
 
         var request = new TriggeredCampaign
         {
