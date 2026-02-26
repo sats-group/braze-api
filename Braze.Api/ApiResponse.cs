@@ -14,7 +14,7 @@ public class ApiResponse<T>
     internal ApiResponse(T? value, IEnumerable<JsonElement>? nonFatalErrors)
     {
         Value = value;
-        NonFatalErrors = nonFatalErrors?.ToList() ?? [];
+        NonFatalErrors = nonFatalErrors?.ToList();
         Success = value is not null
                   && (NonFatalErrors is null
                       || !NonFatalErrors.Any());
