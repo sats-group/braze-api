@@ -57,5 +57,5 @@ public class TriggeredCampaign
     /// </summary>
     [JsonPropertyName("attachments")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Attachment>? Attachments { get; init; }
+    public IEnumerable<Attachment>? Attachments { get; init; }
 }

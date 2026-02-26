@@ -26,7 +26,7 @@ public class SubscriptionGroupUpdate
     /// </summary>
     [JsonPropertyName("external_ids")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? ExternalIds { get; init; }
+    public IEnumerable<string>? ExternalIds { get; init; }
 
     /// <summary>
     /// The email addresses of the users. Must include at least one email address (with a maximum of 50) when identifying users by email.
@@ -34,7 +34,7 @@ public class SubscriptionGroupUpdate
     /// </summary>
     [JsonPropertyName("emails")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? Emails { get; init; }
+    public IEnumerable<string>? Emails { get; init; }
 
     /// <summary>
     /// The phone numbers of the users in E.164 format. Must include at least one phone number (up to 50) when identifying users by phone number.
@@ -42,7 +42,7 @@ public class SubscriptionGroupUpdate
     /// </summary>
     [JsonPropertyName("phones")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? Phones { get; init; }
+    public IEnumerable<string>? Phones { get; init; }
 
     /// <summary>
     /// If this parameter is omitted or set to false, users are not entered into the SMS double opt-in workflow.

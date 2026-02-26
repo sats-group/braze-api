@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,8 +15,16 @@ internal static class HttpResponseMessageExtensions
         var responseBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         if (!responseMessage.IsSuccessStatusCode)
         {
-            var errorResponse =
-                JsonSerializer.Deserialize<BrazeErrorResponse>(responseBody, DefaultJsonSerializerOptions.Options);
+            BrazeErrorResponse? errorResponse;
+            try
+            {
+                errorResponse =
+                    JsonSerializer.Deserialize<BrazeErrorResponse>(responseBody, DefaultJsonSerializerOptions.Options);
+            }
+            catch (JsonException)
+            {
+                errorResponse = null;
+            }
 
             if (errorResponse is not null)
             {
@@ -29,10 +36,8 @@ internal static class HttpResponseMessageExtensions
                 };
             }
 
-            var errorResponseBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
             throw new BrazeApiException(
-                $"Unknown error response returned from Braze: {responseMessage.RequestMessage?.Method} {responseMessage.RequestMessage?.RequestUri}: {errorResponseBody}");
-
+                $"Unknown error response returned from Braze: {responseMessage.RequestMessage?.Method} {responseMessage.RequestMessage?.RequestUri}: {responseBody}");
         }
 
         var response = GetResponseOrThrow<T>(responseMessage, responseBody);
@@ -67,10 +72,4 @@ internal static class HttpResponseMessageExtensions
 
         return response;
     }
-}
-
-internal class BrazeErrorResponse
-{
-    public string? Message { get; init; }
-    public List<JsonElement>? Errors { get; init; }
 }

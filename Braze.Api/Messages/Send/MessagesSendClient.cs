@@ -34,7 +34,7 @@ public class DispatchId
     /// Response message from braze
     /// </summary>
     [JsonPropertyName("message")]
-    public string Message { get; set; } = string.Empty;
+    public string? Message { get; init; }
 }
 
 internal class MessagesSendClient(HttpClient httpClient) : IMessagesSendClient

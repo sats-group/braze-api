@@ -12,5 +12,5 @@ public class SubscriptionStatusSetRequest
     /// The subscription groups to update.
     /// </summary>
     [JsonPropertyName("subscription_groups")]
-    public required List<SubscriptionGroupUpdate> SubscriptionGroups { get; init; }
+    public required IEnumerable<SubscriptionGroupUpdate> SubscriptionGroups { get; init; }
 }
