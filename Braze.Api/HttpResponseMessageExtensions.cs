@@ -33,11 +33,15 @@ internal static class HttpResponseMessageExtensions
                     HttpStatusCode = responseMessage.StatusCode,
                     Errors = errorResponse.Errors,
                     RateLimitingRetryAfter = responseMessage.Headers.GetIntOrDefault("X-RateLimit-Retry-After"),
+                    Endpoint = responseMessage.RequestMessage?.RequestUri
                 };
             }
 
             throw new BrazeApiException(
-                $"Unknown error response returned from Braze: {responseMessage.RequestMessage?.Method} {responseMessage.RequestMessage?.RequestUri}: {responseBody}");
+                $"Unknown error response returned from Braze: {responseMessage.RequestMessage?.Method} {responseMessage.RequestMessage?.RequestUri}: {responseBody}")
+            {
+                Endpoint = responseMessage.RequestMessage?.RequestUri
+            };
         }
 
         var response = GetResponseOrThrow<T>(responseMessage, responseBody);
@@ -62,12 +66,21 @@ internal static class HttpResponseMessageExtensions
             response = JsonSerializer.Deserialize<InternalApiResponse<T>>(responseBody, DefaultJsonSerializerOptions.Options);
             if (response is null)
             {
-                throw new BrazeApiException("Unable to parse response from Braze when calling " + responseMessage.RequestMessage?.RequestUri + ", got body: " + responseBody);
+                throw new BrazeApiException("Unable to parse response from Braze when calling " +
+                                            responseMessage.RequestMessage?.RequestUri + ", got body: " + responseBody)
+                {
+                    Endpoint = responseMessage.RequestMessage?.RequestUri
+                };
             }
         }
         catch (JsonException ex)
         {
-            throw new BrazeApiException("Unable to parse response from Braze when calling " + responseMessage.RequestMessage?.RequestUri + ", got body: " + responseBody, ex);
+            throw new BrazeApiException(
+                "Unable to parse response from Braze when calling " + responseMessage.RequestMessage?.RequestUri +
+                ", got body: " + responseBody, ex)
+            {
+                Endpoint = responseMessage.RequestMessage?.RequestUri
+            };
         }
 
         return response;

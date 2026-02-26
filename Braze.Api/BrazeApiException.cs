@@ -41,5 +41,10 @@ public class BrazeApiException : Exception
     /// X-Ratelimit-Retry-After: an integer indicating the number of seconds before you can start making requests.
     /// </summary>
     public int? RateLimitingRetryAfter { get; init; }
+
+    /// <summary>
+    /// The Braze endpoint called when this exception was thrown.
+    /// </summary>
+    public required Uri? Endpoint { get; init; }
 }
 

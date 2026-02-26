@@ -238,10 +238,9 @@ public class MessagesSendClientIntegrationTests
             // Other properties are null
         };
 
-        // Act
-        var response = await client.TriggerCampaign(request, default);
-
-        // Assert
-        Assert.False(response.Success);
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<BrazeApiException>(() => client.TriggerCampaign(request, default));
+        Assert.Contains("The file_name field for email attachments must not contain an extension.", exception.Message);
+        Assert.Contains("campaigns/trigger/send", exception.Endpoint?.ToString());
     }
 }
