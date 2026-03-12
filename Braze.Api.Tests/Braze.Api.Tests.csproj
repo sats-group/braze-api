@@ -2,7 +2,18 @@
 
     <PropertyGroup>
       <IsPackable>false</IsPackable>
-      <NoWarn>$(NoWarn);IDE0005;</NoWarn>
+      <NoWarn>
+        $(NoWarn);
+        IDE0005;
+        <!--  Avoid creating a new 'JsonSerializerOptions' instance for every serialization operation. -->
+        CA1869;
+
+        <!-- The behavior of 'DateTimeOffset.Parse(string)' could vary based on the current user's locale settings. -->
+        CA1305;
+
+        <!-- Remove the underscores from member name .. -->
+        CA1707;
+      </NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

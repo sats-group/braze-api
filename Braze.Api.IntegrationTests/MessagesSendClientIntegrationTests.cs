@@ -46,7 +46,6 @@ public class MessagesSendClientIntegrationTests
         var request = new TriggeredCampaign
         {
             CampaignId = "campaign-123",
-            CampaignVariationId = "variation-456"
         };
 
         // Act
@@ -57,7 +56,6 @@ public class MessagesSendClientIntegrationTests
         var root = body.RootElement;
 
         HttpRequestAssertions.AssertJsonProperty(root, "campaign_id", "campaign-123");
-        HttpRequestAssertions.AssertJsonProperty(root, "campaign_variation_id", "variation-456");
     }
 
     [Fact]
@@ -70,17 +68,11 @@ public class MessagesSendClientIntegrationTests
         var request = new TriggeredCampaign
         {
             CampaignId = "campaign-123",
-            Recipients = new List<TriggeredCampaignRecipient>
-            {
-                new TriggeredCampaignRecipient
-                {
-                    ExternalUserId = "user-123"
-                },
-                new TriggeredCampaignRecipient
-                {
-                    ExternalUserId = "user-456"
-                }
-            }
+            Recipients =
+            [
+                new Recipient() { ExternalUserId = "user-123" },
+                new Recipient() { ExternalUserId = "user-456" }
+            ]
         };
 
         // Act
@@ -242,5 +234,191 @@ public class MessagesSendClientIntegrationTests
         var exception = await Assert.ThrowsAsync<BrazeApiException>(() => client.TriggerCampaign(request, default));
         Assert.Contains("The file_name field for email attachments must not contain an extension.", exception.Message);
         Assert.Contains("campaigns/trigger/send", exception.Endpoint?.ToString());
+    }
+
+    [Fact]
+    public async Task TriggerCanvas_SendsCorrectHttpRequest()
+    {
+        // Arrange
+        var (client, handler) = TestClientFactory.CreateMessagesSendClient();
+        handler.ConfigureSuccessResponse(@"{""message"": ""success"", ""dispatch_id"": ""dispatch-456""}");
+
+        var request = new TriggeredCanvas
+        {
+            CanvasId = "canvas-123"
+        };
+
+        // Act
+        await client.TriggerCanvas(request, default);
+
+        // Assert
+        Assert.NotNull(handler.LastRequest);
+        handler.LastRequest.AssertMethod(HttpMethod.Post);
+        handler.LastRequest.AssertUri("/canvas/trigger/send");
+        handler.LastRequest.AssertBearerToken("test-api-key");
+        handler.LastRequest.AssertContentType("application/json");
+    }
+
+    [Fact]
+    public async Task TriggerCanvas_SerializesRequestBodyCorrectly()
+    {
+        // Arrange
+        var (client, handler) = TestClientFactory.CreateMessagesSendClient();
+        handler.ConfigureSuccessResponse(@"{""message"": ""success"", ""dispatch_id"": ""dispatch-456""}");
+
+        var request = new TriggeredCanvas
+        {
+            CanvasId = "canvas-123",
+            Broadcast = true
+        };
+
+        // Act
+        await client.TriggerCanvas(request, default);
+
+        // Assert
+        var body = await handler.LastRequest!.ReadBodyAsJson();
+        var root = body.RootElement;
+
+        HttpRequestAssertions.AssertJsonProperty(root, "canvas_id", "canvas-123");
+        HttpRequestAssertions.AssertJsonProperty(root, "broadcast", true);
+    }
+
+    [Fact]
+    public async Task TriggerCanvas_WithRecipients_SerializesCorrectly()
+    {
+        // Arrange
+        var (client, handler) = TestClientFactory.CreateMessagesSendClient();
+        handler.ConfigureSuccessResponse(@"{""message"": ""success"", ""dispatch_id"": ""dispatch-456""}");
+
+        var request = new TriggeredCanvas
+        {
+            CanvasId = "canvas-123",
+            Recipients =
+            [
+                new Recipient { ExternalUserId = "user-123" },
+                new Recipient { ExternalUserId = "user-456" },
+                new Recipient
+                {
+                    Email = "yalla@example.com",
+                    Prioritization =
+                    [
+                        Prioritization.Unidentified,
+                        Prioritization.MostRecentlyUpdated,
+                    ]
+                },
+            ]
+        };
+
+        // Act
+        await client.TriggerCanvas(request, default);
+
+        // Assert
+        var body = await handler.LastRequest!.ReadBodyAsJson();
+        var root = body.RootElement;
+
+        HttpRequestAssertions.AssertJsonPropertyExists(root, "recipients");
+        var recipients = root.GetProperty("recipients");
+        Assert.Equal(JsonValueKind.Array, recipients.ValueKind);
+        Assert.Equal(3, recipients.GetArrayLength());
+        HttpRequestAssertions.AssertJsonProperty(recipients[0], "external_user_id", "user-123");
+        HttpRequestAssertions.AssertJsonProperty(recipients[1], "external_user_id", "user-456");
+        HttpRequestAssertions.AssertJsonProperty(recipients[2], "email", "yalla@example.com");
+        HttpRequestAssertions.AssertJsonProperty(
+            recipients[2],
+            "prioritization",
+            JsonDocument
+                .Parse(
+                    """
+                    [
+                      "unidentified",
+                      "most_recently_updated"
+                    ]
+                    """)
+                .RootElement);
+    }
+
+    [Fact]
+    public async Task TriggerCanvas_WithContext_SerializesCorrectly()
+    {
+        // Arrange
+        var (client, handler) = TestClientFactory.CreateMessagesSendClient();
+        handler.ConfigureSuccessResponse(@"{""message"": ""success"", ""dispatch_id"": ""dispatch-456""}");
+
+        var request = new TriggeredCanvas
+        {
+            CanvasId = "canvas-123",
+            Context = new Dictionary<string, Property>
+            {
+                { "property1", Property.Create("value1") },
+                { "property2", Property.Create(42) }
+            }
+        };
+
+        // Act
+        await client.TriggerCanvas(request, default);
+
+        // Assert
+        var body = await handler.LastRequest!.ReadBodyAsJson();
+        var root = body.RootElement;
+
+        HttpRequestAssertions.AssertJsonPropertyExists(root, "context");
+        var props = root.GetProperty("context");
+        HttpRequestAssertions.AssertJsonPropertyExists(props, "property1");
+        HttpRequestAssertions.AssertJsonPropertyExists(props, "property2");
+    }
+
+    [Fact]
+    public async Task TriggerCanvas_SuccessResponse_ReturnsDispatchId()
+    {
+        // Arrange
+        var (client, handler) = TestClientFactory.CreateMessagesSendClient();
+        handler.ConfigureSuccessResponse(
+            @"{""message"": ""success"", ""dispatch_id"": ""dispatch-456""}",
+            rateLimit: 10000,
+            rateLimitRemaining: 9999,
+            rateLimitReset: 60);
+
+        var request = new TriggeredCanvas
+        {
+            CanvasId = "canvas-123"
+        };
+
+        // Act
+        var response = await client.TriggerCanvas(request, default);
+
+        // Assert
+        Assert.True(response.Success);
+        Assert.NotNull(response.Value);
+        Assert.Equal("dispatch-456", response.Value.Id);
+        Assert.Equal(10000, response.RateLimitingLimit);
+        Assert.Equal(9999, response.RateLimitingRemaining);
+        Assert.Equal(60, response.RateLimitingReset);
+    }
+
+    [Fact]
+    public async Task TriggerCanvas_NullPropertiesNotSerialized()
+    {
+        // Arrange
+        var (client, handler) = TestClientFactory.CreateMessagesSendClient();
+        handler.ConfigureSuccessResponse(@"{""message"": ""success"", ""dispatch_id"": ""dispatch-456""}");
+
+        var request = new TriggeredCanvas
+        {
+            CanvasId = "canvas-123"
+            // Other properties are null
+        };
+
+        // Act
+        await client.TriggerCanvas(request, default);
+
+        // Assert
+        var body = await handler.LastRequest!.ReadBodyAsJson();
+        var root = body.RootElement;
+
+        HttpRequestAssertions.AssertJsonPropertyExists(root, "canvas_id");
+        HttpRequestAssertions.AssertJsonPropertyDoesNotExist(root, "recipients");
+        HttpRequestAssertions.AssertJsonPropertyDoesNotExist(root, "context");
+        HttpRequestAssertions.AssertJsonPropertyDoesNotExist(root, "broadcast");
+        HttpRequestAssertions.AssertJsonPropertyDoesNotExist(root, "audience");
     }
 }

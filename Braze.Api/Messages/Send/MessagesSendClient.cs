@@ -17,6 +17,12 @@ public interface IMessagesSendClient
     /// https://www.braze.com/docs/api/endpoints/messaging/send_messages/post_send_triggered_campaigns
     /// </summary>
     Task<ApiResponse<DispatchId>> TriggerCampaign(TriggeredCampaign triggeredCampaign, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Send canvas messages using API-triggered delivery.
+    /// https://www.braze.com/docs/api/endpoints/messaging/send_messages/post_send_triggered_canvases
+    /// </summary>
+    Task<ApiResponse<DispatchId>> TriggerCanvas(TriggeredCanvas triggeredCanvas, CancellationToken cancellationToken);
 }
 
 /// <summary>
@@ -46,6 +52,21 @@ internal class MessagesSendClient(HttpClient httpClient) : IMessagesSendClient
             new Uri("campaigns/trigger/send", UriKind.Relative))
         {
             Content = JsonContent.Create(triggeredCampaign,
+                options: DefaultJsonSerializerOptions.Options)
+        };
+
+        using var responseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
+
+        return await responseMessage.CreateApiResponse<DispatchId>(cancellationToken);
+    }
+
+    public async Task<ApiResponse<DispatchId>> TriggerCanvas(TriggeredCanvas triggeredCanvas, CancellationToken cancellationToken)
+    {
+        var requestMessage = new HttpRequestMessage(
+            HttpMethod.Post,
+            new Uri("canvas/trigger/send", UriKind.Relative))
+        {
+            Content = JsonContent.Create(triggeredCanvas,
                 options: DefaultJsonSerializerOptions.Options)
         };
 

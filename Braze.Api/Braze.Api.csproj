@@ -3,7 +3,7 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CopyDocumentationFileToOutputDirectory>true</CopyDocumentationFileToOutputDirectory>
-    <VersionPrefix>2.0.0</VersionPrefix>
+    <VersionPrefix>2.0.1</VersionPrefix>
     <PackageId>Braze.Api</PackageId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>SATS Group developers</Authors>

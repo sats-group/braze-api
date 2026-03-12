@@ -3,7 +3,27 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <NoWarn>$(NoWarn);IDE0005;IDE0090;IDE0022;IDE0059;IDE0060;</NoWarn>
+    <NoWarn>
+      $(NoWarn);
+
+      IDE0005;
+      IDE0090;
+      IDE0022;
+      IDE0059;
+      IDE0060;
+
+      <!--  Avoid creating a new 'JsonSerializerOptions' instance for every serialization operation. -->
+      CA1869;
+
+      <!-- The behavior of 'DateTimeOffset.Parse(string)' could vary based on the current user's locale settings. -->
+      CA1305;
+
+      <!-- Remove the underscores from member name .. -->
+      CA1707;
+
+      <!-- Type T can be sealed because it has no subtypes in its containing assembly and is not externally visible -->
+      CA1852;
+    </NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

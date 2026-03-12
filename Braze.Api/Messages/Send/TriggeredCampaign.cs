@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Braze.Api.Messages.Send;
 
 /// <summary>
 /// Request body for sending a triggered campaign message.
-/// Braze endpoint: POST /messages/send/triggered/campaigns
+/// Braze endpoint: POST /campaigns/trigger/send
 /// </summary>
 public class TriggeredCampaign
 {
@@ -16,26 +16,11 @@ public class TriggeredCampaign
     public required string CampaignId { get; init; }
 
     /// <summary>
-    /// Optional ID of the message variation to send.
-    /// If omitted, Braze will choose the default variation.
+    /// The sender ID of the message, see https://www.braze.com/docs/api/identifier_types/#send-identifier.
     /// </summary>
-    [JsonPropertyName("campaign_variation_id")]
+    [JsonPropertyName("send_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? CampaignVariationId { get; init; }
-
-    /// <summary>
-    /// Optional audience definition for the request.
-    /// </summary>
-    [JsonPropertyName("audience")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public TriggeredCampaignAudience? Audience { get; init; }
-
-    /// <summary>
-    /// Optional list of recipients.
-    /// </summary>
-    [JsonPropertyName("recipients")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<TriggeredCampaignRecipient>? Recipients { get; init; }
+    public string? SendId { get; init; }
 
     /// <summary>
     /// Optional custom properties passed into the campaign.
@@ -53,9 +38,16 @@ public class TriggeredCampaign
     public bool? Broadcast { get; init; }
 
     /// <summary>
+    /// Optional list of recipients.
+    /// </summary>
+    [JsonPropertyName("recipients")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Recipient>? Recipients { get; init; }
+
+    /// <summary>
     /// Attachments to send with the message.
     /// </summary>
     [JsonPropertyName("attachments")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IEnumerable<Attachment>? Attachments { get; init; }
+    public List<Attachment>? Attachments { get; init; }
 }

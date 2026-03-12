@@ -74,6 +74,16 @@ internal static class HttpRequestAssertions
     /// <summary>
     /// Assert that a JSON property exists and has the expected value.
     /// </summary>
+    public static void AssertJsonProperty(JsonElement element, string propertyName, JsonElement expectedValue)
+    {
+        Assert.True(element.TryGetProperty(propertyName, out var property),
+            $"Property '{propertyName}' not found in JSON");
+        Assert.True(JsonElement.DeepEquals(expectedValue, property));
+    }
+
+    /// <summary>
+    /// Assert that a JSON property exists and has the expected value.
+    /// </summary>
     public static void AssertJsonProperty(JsonElement element, string propertyName, string expectedValue)
     {
         Assert.True(element.TryGetProperty(propertyName, out var property),
@@ -89,6 +99,16 @@ internal static class HttpRequestAssertions
         Assert.True(element.TryGetProperty(propertyName, out var property),
             $"Property '{propertyName}' not found in JSON");
         Assert.Equal(expectedValue, property.GetInt32());
+    }
+
+    /// <summary>
+    /// Assert that a JSON property exists and has the expected boolean value.
+    /// </summary>
+    public static void AssertJsonProperty(JsonElement element, string propertyName, bool expectedValue)
+    {
+        Assert.True(element.TryGetProperty(propertyName, out var property),
+            $"Property '{propertyName}' not found in JSON");
+        Assert.Equal(expectedValue, property.GetBoolean());
     }
 
     /// <summary>
