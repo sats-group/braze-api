@@ -8,7 +8,10 @@ namespace Braze.Api.UserData;
 /// <summary>
 /// The user attribute request model.
 /// </summary>
+// Allow this class to end in Attribute, as it makes sense for this api.
+#pragma warning disable CA1711
 public class UserAttribute : BrazeUserIdentifier
+#pragma warning restore CA1711
 {
     /// <summary>
     /// If you have a user profile with a different external_id than the one in this request, you can use this to update the existing user profile.
