@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Braze.Api.Messages.Send;
@@ -28,7 +28,7 @@ public class TriggeredCampaign
     /// </summary>
     [JsonPropertyName("audience")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public TriggeredCampaignAudience? Audience { get; init; }
+    public ConnectedAudience? Audience { get; init; }
 
     /// <summary>
     /// Optional list of recipients.

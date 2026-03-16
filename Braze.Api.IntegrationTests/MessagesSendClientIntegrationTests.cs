@@ -220,6 +220,76 @@ public class MessagesSendClientIntegrationTests
     }
 
     [Fact]
+    public async Task TriggerCampaign_WithAndAudience_SerializesCorrectly()
+    {
+        // Arrange
+        var (client, handler) = TestClientFactory.CreateMessagesSendClient();
+        handler.ConfigureSuccessResponse(@"{""message"": ""success"", ""dispatch_id"": ""dispatch-123""}");
+
+        var request = new TriggeredCampaign
+        {
+            CampaignId = "campaign-123",
+            Audience = ConnectedAudience.CreateAnd(new List<ConnectedAudience>
+            {
+                new ConnectedAudience.SegmentFilter { SegmentId = "seg-1" },
+                ConnectedAudience.CreateOr(new List<ConnectedAudience>
+                {
+                    new ConnectedAudience.SegmentFilter { SegmentId = "seg-2" },
+                    new ConnectedAudience.SegmentFilter { SegmentId = "seg-3" },
+                }),
+            }),
+        };
+
+        // Act
+        await client.TriggerCampaign(request, default);
+
+        // Assert
+        var body = await handler.LastRequest!.ReadBodyAsJson();
+        var root = body.RootElement;
+
+        HttpRequestAssertions.AssertJsonPropertyExists(root, "audience");
+        var audience = root.GetProperty("audience");
+        Assert.Equal(JsonValueKind.Object, audience.ValueKind);
+        Assert.True(audience.TryGetProperty("AND", out var andProp));
+        Assert.Equal(JsonValueKind.Array, andProp.ValueKind);
+        Assert.Equal(2, andProp.GetArrayLength());
+
+        // First AND element: segment seg-1
+        Assert.True(andProp[0].TryGetProperty("segment", out var seg1));
+        Assert.Equal("seg-1", seg1.GetProperty("segment_id").GetString());
+
+        // Second AND element: OR compound
+        Assert.True(andProp[1].TryGetProperty("OR", out var orProp));
+        Assert.Equal(2, orProp.GetArrayLength());
+    }
+
+    [Fact]
+    public async Task TriggerCampaign_WithSegmentAudience_SerializesCorrectly()
+    {
+        // Arrange
+        var (client, handler) = TestClientFactory.CreateMessagesSendClient();
+        handler.ConfigureSuccessResponse(@"{""message"": ""success"", ""dispatch_id"": ""dispatch-123""}");
+
+        var request = new TriggeredCampaign
+        {
+            CampaignId = "campaign-123",
+            Audience = new ConnectedAudience.SegmentFilter { SegmentId = "my-segment" },
+        };
+
+        // Act
+        await client.TriggerCampaign(request, default);
+
+        // Assert
+        var body = await handler.LastRequest!.ReadBodyAsJson();
+        var root = body.RootElement;
+
+        HttpRequestAssertions.AssertJsonPropertyExists(root, "audience");
+        var audience = root.GetProperty("audience");
+        Assert.True(audience.TryGetProperty("segment", out var segment));
+        Assert.Equal("my-segment", segment.GetProperty("segment_id").GetString());
+    }
+
+    [Fact]
     public async Task TriggerCampaign_InvalidAttachmentsFileName_HandlesErrorResponse()
     {
         // Arrange
