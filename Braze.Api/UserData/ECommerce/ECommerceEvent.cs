@@ -22,9 +22,12 @@ public class ECommerceEvent<T> : Event where T : ECommerceProperty
 public class OrderPlacedEvent : ECommerceEvent<OrderPlacedProperties>
 {
     /// <summary>
-    /// Constructor. Sets the name of the event to "ecommerce.order_placed".
+    /// Initializes a new instance of the <see cref="OrderPlacedEvent"/> class with the event name set to "ecommerce.order_placed".
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SetsRequiredMembers]
+#pragma warning disable CS8618 // Non-nullable property must contain a non-null value when exiting constructor
     public OrderPlacedEvent()
+#pragma warning restore CS8618
     {
         Name = "ecommerce.order_placed";
     }
@@ -53,6 +56,7 @@ public class OrderPlacedProperties : ECommerceProperty
     /// If you are not using a third-party platform that provides a cart_id, you can use the Braze session ID.
     /// </summary>
     [JsonPropertyName("cart_id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? CartId { get; init; }
 
     /// <summary>
@@ -71,12 +75,14 @@ public class OrderPlacedProperties : ECommerceProperty
     /// Total discount amount applied to the order.
     /// </summary>
     [JsonPropertyName("total_discounts")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public decimal? TotalDiscounts { get; init; }
 
     /// <summary>
     /// Detailed list of discounts applied to the order.
     /// </summary>
     [JsonPropertyName("discounts")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<Discount>? Discounts { get; init; }
 
     /// <summary>
@@ -95,6 +101,7 @@ public class OrderPlacedProperties : ECommerceProperty
     /// Additional metadata about the order.
     /// </summary>
     [JsonPropertyName("metadata")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Dictionary<string, object>? Metadata { get; init; }
 }
 
@@ -155,13 +162,15 @@ public class Product
     /// The URL of the product image, if available.
     /// </summary>
     [JsonPropertyName("image_url")]
-    public Uri? ImageUrl { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Uri? ImageUrl { get; init; }
 
     /// <summary>
-    /// The URL of the product image, if available.
+    /// The URL of the product page for more details.
     /// </summary>
     [JsonPropertyName("product_url")]
-    public Uri? ProductUrl { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Uri? ProductUrl { get; init; }
 
     /// <summary>
     /// Additional metadata field about the product that the customer wants to add for their use cases. For Shopify, we will add SKU.
@@ -170,6 +179,7 @@ public class Product
     /// This will have a limit based on Braze's general event properties limit of 50kb.
     /// </remarks>
     [JsonPropertyName("metadata")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Dictionary<string, object>? Metadata { get; init; }
 }
 //
