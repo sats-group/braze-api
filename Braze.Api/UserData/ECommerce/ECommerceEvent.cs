@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Braze.Api.UserData.ECommerce;
 
@@ -92,7 +93,7 @@ public class OrderPlacedProperties : ECommerceProperty
     public required IEnumerable<Product> Products { get; init; }
 
     /// <summary>
-    /// Source the event is derived from. (For Shopify, this is storefront).
+    /// Source the event is derived from. (For Shopify, this is "storefront").
     /// </summary>
     [JsonPropertyName("source")]
     public required string Source { get; init; }
