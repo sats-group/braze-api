@@ -29,16 +29,22 @@ public class Event : BrazeUserIdentifier
     public required DateTimeOffset Time { get; init; }
 
     /// <summary>
-    /// The properties.
-    /// </summary>
-    [JsonPropertyName("properties")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Dictionary<string, Property>? Properties { get; init; }
-
-    /// <summary>
     /// If you have a user profile with a different external_id than the one in this request, you can use this to update the existing user profile.
     /// </summary>
     [JsonPropertyName("_update_existing_only")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? UpdateExistingOnly { get; init; }
+}
+
+/// <summary>
+/// An ordinary Braze custom event, where the properties are defined in the event itself.
+/// </summary>
+public class CustomEvent : Event
+{
+    /// <summary>
+    /// The properties.
+    /// </summary>
+    [JsonPropertyName("properties")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Dictionary<string, Property>? Properties { get; init; }
 }
