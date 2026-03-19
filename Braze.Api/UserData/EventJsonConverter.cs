@@ -47,9 +47,20 @@ public class EventJsonConverter : JsonConverter<Event>
             _ => typeof(CustomEvent) // Default to CustomEvent for non-ecommerce events
         };
 
+        // Create new options without the converter to avoid infinite recursion
+        var optionsWithoutConverter = new JsonSerializerOptions(options);
+        optionsWithoutConverter.Converters.Clear();
+        foreach (var converter in options.Converters)
+        {
+            if (converter.GetType() != typeof(EventJsonConverter))
+            {
+                optionsWithoutConverter.Converters.Add(converter);
+            }
+        }
+
         // Deserialize to the concrete type
         var json = root.GetRawText();
-        var result = JsonSerializer.Deserialize(json, concreteType, options);
+        var result = JsonSerializer.Deserialize(json, concreteType, optionsWithoutConverter);
         
         if (result == null)
         {

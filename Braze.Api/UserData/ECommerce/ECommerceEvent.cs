@@ -462,7 +462,7 @@ public class OrderRefundedProperties : ECommerceProperty
     public IEnumerable<Discount>? Discounts { get; init; }
 
     /// <summary>
-    /// List of products included in the refund.
+    /// List of products included in the refund (required per Braze API specification).
     /// </summary>
     [JsonPropertyName("products")]
     public required IEnumerable<Product> Products { get; init; }
@@ -525,7 +525,7 @@ public class OrderCancelledProperties : ECommerceProperty
     public IEnumerable<Discount>? Discounts { get; init; }
 
     /// <summary>
-    /// List of products included in the cancelled order.
+    /// List of products included in the cancelled order (required per Braze API specification).
     /// </summary>
     [JsonPropertyName("products")]
     public required IEnumerable<Product> Products { get; init; }
