@@ -279,6 +279,18 @@ public class CartUpdatedProperties : ECommerceProperty
     public required string CartId { get; init; }
 
     /// <summary>
+    /// Total monetary value of the cart.
+    /// </summary>
+    [JsonPropertyName("total_value")]
+    public required decimal TotalValue { get; init; }
+
+    /// <summary>
+    /// Currency in which the cart is valued.
+    /// </summary>
+    [JsonPropertyName("currency")]
+    public required string Currency { get; init; }
+
+    /// <summary>
     /// List of products currently in the cart.
     /// </summary>
     [JsonPropertyName("products")]
@@ -424,42 +436,42 @@ public class OrderRefundedProperties : ECommerceProperty
     public required string OrderId { get; init; }
 
     /// <summary>
-    /// Unique identifier for the refund.
+    /// Total monetary value of the order.
     /// </summary>
-    [JsonPropertyName("refund_id")]
-    public required string RefundId { get; init; }
+    [JsonPropertyName("total_value")]
+    public required decimal TotalValue { get; init; }
 
     /// <summary>
-    /// The total amount refunded.
-    /// </summary>
-    [JsonPropertyName("refund_amount")]
-    public required decimal RefundAmount { get; init; }
-
-    /// <summary>
-    /// Currency in which the refund is valued.
+    /// Currency in which the order is valued.
     /// </summary>
     [JsonPropertyName("currency")]
     public required string Currency { get; init; }
+
+    /// <summary>
+    /// Total discount amount applied to the order.
+    /// </summary>
+    [JsonPropertyName("total_discounts")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? TotalDiscounts { get; init; }
+
+    /// <summary>
+    /// Detailed list of discounts applied to the order.
+    /// </summary>
+    [JsonPropertyName("discounts")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<Discount>? Discounts { get; init; }
+
+    /// <summary>
+    /// List of products included in the refund.
+    /// </summary>
+    [JsonPropertyName("products")]
+    public required IEnumerable<Product> Products { get; init; }
 
     /// <summary>
     /// Source the event is derived from. (For Shopify, this is "storefront").
     /// </summary>
     [JsonPropertyName("source")]
     public required string Source { get; init; }
-
-    /// <summary>
-    /// The reason for the refund.
-    /// </summary>
-    [JsonPropertyName("refund_reason")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? RefundReason { get; init; }
-
-    /// <summary>
-    /// List of products included in the refund.
-    /// </summary>
-    [JsonPropertyName("products")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IEnumerable<Product>? Products { get; init; }
 
     /// <summary>
     /// Additional metadata about the refund.
@@ -481,30 +493,48 @@ public class OrderCancelledProperties : ECommerceProperty
     public required string OrderId { get; init; }
 
     /// <summary>
+    /// Reason why the order was cancelled.
+    /// </summary>
+    [JsonPropertyName("cancel_reason")]
+    public required string CancelReason { get; init; }
+
+    /// <summary>
+    /// Total monetary value of the order.
+    /// </summary>
+    [JsonPropertyName("total_value")]
+    public required decimal TotalValue { get; init; }
+
+    /// <summary>
     /// Currency in which the order was valued.
     /// </summary>
     [JsonPropertyName("currency")]
     public required string Currency { get; init; }
 
     /// <summary>
-    /// Source the event is derived from. (For Shopify, this is "storefront").
+    /// Total discount amount applied to the order.
     /// </summary>
-    [JsonPropertyName("source")]
-    public required string Source { get; init; }
+    [JsonPropertyName("total_discounts")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? TotalDiscounts { get; init; }
 
     /// <summary>
-    /// The reason for the cancellation.
+    /// Detailed list of discounts applied to the order.
     /// </summary>
-    [JsonPropertyName("cancel_reason")]
+    [JsonPropertyName("discounts")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? CancelReason { get; init; }
+    public IEnumerable<Discount>? Discounts { get; init; }
 
     /// <summary>
     /// List of products included in the cancelled order.
     /// </summary>
     [JsonPropertyName("products")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IEnumerable<Product>? Products { get; init; }
+    public required IEnumerable<Product> Products { get; init; }
+
+    /// <summary>
+    /// Source the event is derived from. (For Shopify, this is "storefront").
+    /// </summary>
+    [JsonPropertyName("source")]
+    public required string Source { get; init; }
 
     /// <summary>
     /// Additional metadata about the cancellation.

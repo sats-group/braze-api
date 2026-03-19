@@ -9,13 +9,7 @@ namespace Braze.Api.UserData;
 /// <summary>
 /// The event request model.
 /// </summary>
-[JsonDerivedType(typeof(CustomEvent))]
-[JsonDerivedType(typeof(ProductViewedEvent))]
-[JsonDerivedType(typeof(CartUpdatedEvent))]
-[JsonDerivedType(typeof(CheckoutStartedEvent))]
-[JsonDerivedType(typeof(OrderPlacedEvent))]
-[JsonDerivedType(typeof(OrderRefundedEvent))]
-[JsonDerivedType(typeof(OrderCancelledEvent))]
+[JsonConverter(typeof(EventJsonConverter))]
 public class Event : BrazeUserIdentifier
 {
     /// <summary>

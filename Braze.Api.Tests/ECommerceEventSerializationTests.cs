@@ -567,6 +567,8 @@ public class ECommerceEventSerializationTests
             Properties = new CartUpdatedProperties
             {
                 CartId = "CART-8675309",
+                TotalValue = 339.97m,
+                Currency = "USD",
                 Products = new List<Product>
                 {
                     new()
@@ -605,6 +607,8 @@ public class ECommerceEventSerializationTests
         // Assert - Verify properties
         Assert.True(root.TryGetProperty("properties", out var properties));
         Assert.Equal("CART-8675309", properties.GetProperty("cart_id").GetString());
+        Assert.Equal(339.97m, properties.GetProperty("total_value").GetDecimal());
+        Assert.Equal("USD", properties.GetProperty("currency").GetString());
         Assert.Equal("storefront", properties.GetProperty("source").GetString());
 
         // Assert - Verify products array
@@ -633,6 +637,8 @@ public class ECommerceEventSerializationTests
             Properties = new CartUpdatedProperties
             {
                 CartId = "cart_minimal",
+                TotalValue = 49.99m,
+                Currency = "EUR",
                 Products = new List<Product>
                 {
                     new()
@@ -657,6 +663,8 @@ public class ECommerceEventSerializationTests
         Assert.Equal("ecommerce.cart_updated", root.GetProperty("name").GetString());
         Assert.True(root.TryGetProperty("properties", out var properties));
         Assert.Equal("cart_minimal", properties.GetProperty("cart_id").GetString());
+        Assert.Equal(49.99m, properties.GetProperty("total_value").GetDecimal());
+        Assert.Equal("EUR", properties.GetProperty("currency").GetString());
 
         // Assert - Verify optional metadata is omitted
         Assert.False(properties.TryGetProperty("metadata", out _));
@@ -778,11 +786,17 @@ public class ECommerceEventSerializationTests
             Properties = new OrderRefundedProperties
             {
                 OrderId = "order_67890",
-                RefundId = "refund_11111",
-                RefundAmount = 99.99m,
+                TotalValue = 99.99m,
                 Currency = "USD",
-                Source = "storefront",
-                RefundReason = "Defective item",
+                TotalDiscounts = 5.00m,
+                Discounts = new List<Discount>
+                {
+                    new()
+                    {
+                        Code = "SAVE5",
+                        Amount = 5.00m
+                    }
+                },
                 Products = new List<Product>
                 {
                     new()
@@ -794,9 +808,13 @@ public class ECommerceEventSerializationTests
                         Price = 99.99m
                     }
                 },
+                Source = "storefront",
                 Metadata = new Dictionary<string, object>
                 {
-                    { "refund_status_url", "https://example.com/refunds/11111" }
+                    { "order_status_url", "https://braze-audio.com/orders/67890/status" },
+                    { "order_note", "Customer requested refund due to defective item" },
+                    { "order_number", "ORD-2024-001234" },
+                    { "tags", new List<string> { "refund", "defective" } }
                 }
             }
         };
@@ -812,11 +830,17 @@ public class ECommerceEventSerializationTests
         // Assert - Verify properties
         Assert.True(root.TryGetProperty("properties", out var properties));
         Assert.Equal("order_67890", properties.GetProperty("order_id").GetString());
-        Assert.Equal("refund_11111", properties.GetProperty("refund_id").GetString());
-        Assert.Equal(99.99m, properties.GetProperty("refund_amount").GetDecimal());
+        Assert.Equal(99.99m, properties.GetProperty("total_value").GetDecimal());
         Assert.Equal("USD", properties.GetProperty("currency").GetString());
+        Assert.Equal(5.00m, properties.GetProperty("total_discounts").GetDecimal());
         Assert.Equal("storefront", properties.GetProperty("source").GetString());
-        Assert.Equal("Defective item", properties.GetProperty("refund_reason").GetString());
+
+        // Assert - Verify discounts array
+        var discounts = properties.GetProperty("discounts");
+        Assert.Equal(JsonValueKind.Array, discounts.ValueKind);
+        Assert.Single(discounts.EnumerateArray());
+        Assert.Equal("SAVE5", discounts[0].GetProperty("code").GetString());
+        Assert.Equal(5.00m, discounts[0].GetProperty("amount").GetDecimal());
 
         // Assert - Verify products array
         var products = properties.GetProperty("products");
@@ -826,7 +850,8 @@ public class ECommerceEventSerializationTests
 
         // Assert - Verify metadata
         var metadata = properties.GetProperty("metadata");
-        Assert.Equal("https://example.com/refunds/11111", metadata.GetProperty("refund_status_url").GetString());
+        Assert.Equal("https://braze-audio.com/orders/67890/status", metadata.GetProperty("order_status_url").GetString());
+        Assert.Equal("Customer requested refund due to defective item", metadata.GetProperty("order_note").GetString());
     }
 
     [Fact]
@@ -840,9 +865,19 @@ public class ECommerceEventSerializationTests
             Properties = new OrderRefundedProperties
             {
                 OrderId = "order_minimal",
-                RefundId = "refund_minimal",
-                RefundAmount = 49.99m,
+                TotalValue = 49.99m,
                 Currency = "EUR",
+                Products = new List<Product>
+                {
+                    new()
+                    {
+                        ProductId = "prod_001",
+                        ProductName = "Test Product",
+                        VariantId = "var_001",
+                        Quantity = 1,
+                        Price = 49.99m
+                    }
+                },
                 Source = "web"
             }
         };
@@ -856,12 +891,11 @@ public class ECommerceEventSerializationTests
         Assert.Equal("ecommerce.order_refunded", root.GetProperty("name").GetString());
         Assert.True(root.TryGetProperty("properties", out var properties));
         Assert.Equal("order_minimal", properties.GetProperty("order_id").GetString());
-        Assert.Equal("refund_minimal", properties.GetProperty("refund_id").GetString());
-        Assert.Equal(49.99m, properties.GetProperty("refund_amount").GetDecimal());
+        Assert.Equal(49.99m, properties.GetProperty("total_value").GetDecimal());
 
         // Assert - Verify optional fields are omitted
-        Assert.False(properties.TryGetProperty("refund_reason", out _));
-        Assert.False(properties.TryGetProperty("products", out _));
+        Assert.False(properties.TryGetProperty("total_discounts", out _));
+        Assert.False(properties.TryGetProperty("discounts", out _));
         Assert.False(properties.TryGetProperty("metadata", out _));
     }
 
@@ -877,9 +911,18 @@ public class ECommerceEventSerializationTests
             Properties = new OrderCancelledProperties
             {
                 OrderId = "order_67890",
+                CancelReason = "customer changed mind",
+                TotalValue = 189.98m,
                 Currency = "USD",
-                Source = "storefront",
-                CancelReason = "Customer request",
+                TotalDiscounts = 10.00m,
+                Discounts = new List<Discount>
+                {
+                    new()
+                    {
+                        Code = "SAVE10",
+                        Amount = 10.00m
+                    }
+                },
                 Products = new List<Product>
                 {
                     new()
@@ -891,9 +934,12 @@ public class ECommerceEventSerializationTests
                         Price = 199.98m
                     }
                 },
+                Source = "storefront",
                 Metadata = new Dictionary<string, object>
                 {
-                    { "cancellation_url", "https://example.com/orders/67890/cancel" }
+                    { "order_status_url", "https://braze-audio.com/orders/67890/status" },
+                    { "order_number", "ORD-2024-001234" },
+                    { "tags", new List<string> { "cancelled", "customer_request" } }
                 }
             }
         };
@@ -909,9 +955,18 @@ public class ECommerceEventSerializationTests
         // Assert - Verify properties
         Assert.True(root.TryGetProperty("properties", out var properties));
         Assert.Equal("order_67890", properties.GetProperty("order_id").GetString());
+        Assert.Equal("customer changed mind", properties.GetProperty("cancel_reason").GetString());
+        Assert.Equal(189.98m, properties.GetProperty("total_value").GetDecimal());
         Assert.Equal("USD", properties.GetProperty("currency").GetString());
+        Assert.Equal(10.00m, properties.GetProperty("total_discounts").GetDecimal());
         Assert.Equal("storefront", properties.GetProperty("source").GetString());
-        Assert.Equal("Customer request", properties.GetProperty("cancel_reason").GetString());
+
+        // Assert - Verify discounts array
+        var discounts = properties.GetProperty("discounts");
+        Assert.Equal(JsonValueKind.Array, discounts.ValueKind);
+        Assert.Single(discounts.EnumerateArray());
+        Assert.Equal("SAVE10", discounts[0].GetProperty("code").GetString());
+        Assert.Equal(10.00m, discounts[0].GetProperty("amount").GetDecimal());
 
         // Assert - Verify products array
         var products = properties.GetProperty("products");
@@ -921,7 +976,7 @@ public class ECommerceEventSerializationTests
 
         // Assert - Verify metadata
         var metadata = properties.GetProperty("metadata");
-        Assert.Equal("https://example.com/orders/67890/cancel", metadata.GetProperty("cancellation_url").GetString());
+        Assert.Equal("https://braze-audio.com/orders/67890/status", metadata.GetProperty("order_status_url").GetString());
     }
 
     [Fact]
@@ -935,7 +990,20 @@ public class ECommerceEventSerializationTests
             Properties = new OrderCancelledProperties
             {
                 OrderId = "order_minimal",
+                CancelReason = "customer request",
+                TotalValue = 99.99m,
                 Currency = "GBP",
+                Products = new List<Product>
+                {
+                    new()
+                    {
+                        ProductId = "prod_001",
+                        ProductName = "Test Product",
+                        VariantId = "var_001",
+                        Quantity = 1,
+                        Price = 99.99m
+                    }
+                },
                 Source = "web"
             }
         };
@@ -949,12 +1017,14 @@ public class ECommerceEventSerializationTests
         Assert.Equal("ecommerce.order_cancelled", root.GetProperty("name").GetString());
         Assert.True(root.TryGetProperty("properties", out var properties));
         Assert.Equal("order_minimal", properties.GetProperty("order_id").GetString());
+        Assert.Equal("customer request", properties.GetProperty("cancel_reason").GetString());
+        Assert.Equal(99.99m, properties.GetProperty("total_value").GetDecimal());
         Assert.Equal("GBP", properties.GetProperty("currency").GetString());
         Assert.Equal("web", properties.GetProperty("source").GetString());
 
         // Assert - Verify optional fields are omitted
-        Assert.False(properties.TryGetProperty("cancel_reason", out _));
-        Assert.False(properties.TryGetProperty("products", out _));
+        Assert.False(properties.TryGetProperty("total_discounts", out _));
+        Assert.False(properties.TryGetProperty("discounts", out _));
         Assert.False(properties.TryGetProperty("metadata", out _));
     }
 }
