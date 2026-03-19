@@ -1,0 +1,207 @@
+using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
+namespace Braze.Api.UserData.ECommerce;
+
+/// <summary>
+/// Strongly typed support for Braze's implementation of ecommerce events
+/// </summary>
+public class ECommerceEvent<T> : Event where T : ECommerceProperty
+{
+    /// <summary>
+    /// The properties for this ecommerce event.
+    /// </summary>
+    [JsonPropertyName("properties")]
+    public required T Properties { get; init; }
+}
+
+/// <summary>
+/// Event triggered when a customer successfully completes an order.
+/// </summary>
+public class OrderPlacedEvent : ECommerceEvent<OrderPlacedProperties>
+{
+    /// <summary>
+    /// Constructor. Sets the name of the event to "ecommerce.order_placed".
+    /// </summary>
+    public OrderPlacedEvent()
+    {
+        Name = "ecommerce.order_placed";
+    }
+}
+
+/// <summary>
+/// Base class for ecommerce event properties.
+/// </summary>
+public abstract class ECommerceProperty
+{
+
+}
+
+/// <summary>
+/// Properties for the ecommerce.order_placed event.
+/// </summary>
+public class OrderPlacedProperties : ECommerceProperty
+{
+    /// <summary>
+    /// Unique identifier for the order placed.
+    /// </summary>
+    [JsonPropertyName("order_id")]
+    public required string OrderId { get; init; }
+
+    /// <summary>
+    /// If you are not using a third-party platform that provides a cart_id, you can use the Braze session ID.
+    /// </summary>
+    [JsonPropertyName("cart_id")]
+    public string? CartId { get; init; }
+
+    /// <summary>
+    /// Total monetary value of the cart.
+    /// </summary>
+    [JsonPropertyName("total_value")]
+    public required decimal TotalValue { get; init; }
+
+    /// <summary>
+    /// Currency in which the cart is valued.
+    /// </summary>
+    [JsonPropertyName("currency")]
+    public required string Currency { get; init; }
+
+    /// <summary>
+    /// Total discount amount applied to the order.
+    /// </summary>
+    [JsonPropertyName("total_discounts")]
+    public decimal? TotalDiscounts { get; init; }
+
+    /// <summary>
+    /// Detailed list of discounts applied to the order.
+    /// </summary>
+    [JsonPropertyName("discounts")]
+    public IEnumerable<Discount>? Discounts { get; init; }
+
+    /// <summary>
+    /// List of products in the order.
+    /// </summary>
+    [JsonPropertyName("products")]
+    public required IEnumerable<Product> Products { get; init; }
+
+    /// <summary>
+    /// Source the event is derived from. (For Shopify, this is storefront).
+    /// </summary>
+    [JsonPropertyName("source")]
+    public required string Source { get; init; }
+
+    /// <summary>
+    /// Additional metadata about the order.
+    /// </summary>
+    [JsonPropertyName("metadata")]
+    public Dictionary<string, object>? Metadata { get; init; }
+}
+
+/// <summary>
+/// A discount applied to an order.
+/// </summary>
+public class Discount
+{
+    /// <summary>
+    /// Discount code (campaigns, coupons, etc.)
+    /// </summary>
+    [JsonPropertyName("code")]
+    public required string Code { get; init; }
+
+    /// <summary>
+    /// The amount of the discount.
+    /// </summary>
+    [JsonPropertyName("amount")]
+    public required decimal Amount { get; init; }
+}
+
+/// <summary>
+/// A product in the context of an order
+/// </summary>
+public class Product
+{
+    /// <summary>
+    /// A unique identifier for the product that was viewed. This value be can be the product ID or SKU.
+    /// </summary>
+    [JsonPropertyName("product_id")]
+    public required string ProductId { get; init; }
+
+    /// <summary>
+    /// The name of the product that was viewed.
+    /// </summary>
+    [JsonPropertyName("product_name")]
+    public required string ProductName { get; init; }
+
+    /// <summary>
+    /// A unique identifier for the product variant. An example is shirt_medium_blue
+    /// </summary>
+    [JsonPropertyName("variant_id")]
+    public required string VariantId { get; init; }
+
+    /// <summary>
+    /// Number of units of the product in the cart.
+    /// </summary>
+    [JsonPropertyName("quantity")]
+    public required int Quantity { get; init; }
+
+    /// <summary>
+    /// The variant unit price of the product at the time of viewing.
+    /// </summary>
+    [JsonPropertyName("price")]
+    public required decimal Price { get; init; }
+
+    /// <summary>
+    /// The URL of the product image, if available.
+    /// </summary>
+    [JsonPropertyName("image_url")]
+    public Uri? ImageUrl { get; set; }
+
+    /// <summary>
+    /// The URL of the product image, if available.
+    /// </summary>
+    [JsonPropertyName("product_url")]
+    public Uri? ProductUrl { get; set; }
+
+    /// <summary>
+    /// Additional metadata field about the product that the customer wants to add for their use cases. For Shopify, we will add SKU.
+    /// </summary>
+    /// <remarks>
+    /// This will have a limit based on Braze's general event properties limit of 50kb.
+    /// </remarks>
+    [JsonPropertyName("metadata")]
+    public Dictionary<string, object>? Metadata { get; init; }
+}
+//
+// public class ProductMetadata
+// {
+//     [JsonPropertyName("sku")]
+//     public string? Sku { get; init; }
+//
+//     [JsonPropertyName("color")]
+//     public string? Color { get; init; }
+//
+//     [JsonPropertyName("brand")]
+//     public string? Brand { get; init; }
+// }
+//
+// /// <summary>
+// /// Additional metadata about the order.
+// /// </summary>
+// public class OrderMetadata
+// {
+//     [JsonPropertyName("order_status_url")]
+//     public string OrderStatusUrl { get; init; }
+//
+//     [JsonPropertyName("order_number")]
+//     public string OrderNumber { get; init; }
+//
+//     [JsonPropertyName("tags")]
+//     public string[] Tags { get; init; }
+//
+//     [JsonPropertyName("referring_site")]
+//     public string ReferringSite { get; init; }
+//
+//     [JsonPropertyName("payment_gateway_names")]
+//     public string[] PaymentGatewayNames { get; init; }
+// }

@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Braze.Api.UserData.ECommerce;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Braze.Api.UserData;
 
 /// <summary>
 /// The event request model.
 /// </summary>
+[JsonDerivedType(typeof(CustomEvent))]
+[JsonDerivedType(typeof(OrderPlacedEvent))]
 public class Event : BrazeUserIdentifier
 {
     /// <summary>
-    /// The app Id.
+    /// The app id.
     /// </summary>
     [JsonPropertyName("app_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
