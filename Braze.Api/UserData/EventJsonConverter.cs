@@ -36,7 +36,7 @@ public class EventJsonConverter : JsonConverter<Event>
         }
 
         // Determine the concrete type based on the name
-        Type concreteType = name switch
+        var concreteType = name switch
         {
             "ecommerce.product_viewed" => typeof(ProductViewedEvent),
             "ecommerce.cart_updated" => typeof(CartUpdatedEvent),
@@ -61,7 +61,7 @@ public class EventJsonConverter : JsonConverter<Event>
         // Deserialize to the concrete type
         var json = root.GetRawText();
         var result = JsonSerializer.Deserialize(json, concreteType, optionsWithoutConverter);
-        
+
         if (result == null)
         {
             throw new JsonException($"Failed to deserialize Event with name '{name}'");
@@ -78,18 +78,6 @@ public class EventJsonConverter : JsonConverter<Event>
     /// <param name="options">The serializer options.</param>
     public override void Write(Utf8JsonWriter writer, Event value, JsonSerializerOptions options)
     {
-        // Create new options without the converter to avoid infinite recursion
-        var optionsWithoutConverter = new JsonSerializerOptions(options);
-        optionsWithoutConverter.Converters.Clear();
-        foreach (var converter in options.Converters)
-        {
-            if (converter.GetType() != typeof(EventJsonConverter))
-            {
-                optionsWithoutConverter.Converters.Add(converter);
-            }
-        }
-
-        // Serialize using the concrete type
-        JsonSerializer.Serialize(writer, value, value.GetType(), optionsWithoutConverter);
+        JsonSerializer.Serialize(writer, value, value.GetType(), options);
     }
 }

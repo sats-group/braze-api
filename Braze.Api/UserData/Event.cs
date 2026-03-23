@@ -10,7 +10,7 @@ namespace Braze.Api.UserData;
 /// The event request model.
 /// </summary>
 [JsonConverter(typeof(EventJsonConverter))]
-public class Event : BrazeUserIdentifier
+public abstract class Event : BrazeUserIdentifier
 {
     /// <summary>
     /// The app id.
