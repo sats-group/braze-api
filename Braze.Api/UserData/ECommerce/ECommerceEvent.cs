@@ -165,7 +165,7 @@ public class Product
     /// A unique identifier for the product variant. An example is shirt_medium_blue
     /// </summary>
     [JsonPropertyName("variant_id")]
-    public required string VariantId { get; init; }
+    public string? VariantId { get; init; }
 
     /// <summary>
     /// Number of units of the product in the cart.
