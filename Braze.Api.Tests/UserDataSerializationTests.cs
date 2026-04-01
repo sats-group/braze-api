@@ -32,7 +32,7 @@ public class UserDataSerializationTests
             ],
             Events =
             [
-                new ()
+                new CustomEvent
                 {
                     Name = "navn",
                     Time = DateTimeOffset.Parse("2003-01-01T00:00:00+00:00"),

@@ -94,15 +94,13 @@ public class UserDataClientIntegrationTests
 
         var request = new TrackRequest
         {
-            Events = new List<Event>
-            {
-                new Event
+            Events =
+            [
+                new CustomEvent
                 {
-                    ExternalId = "user123",
-                    Name = "test_event",
-                    Time = DateTimeOffset.Parse("2024-01-01T00:00:00Z")
+                    ExternalId = "user123", Name = "test_event", Time = DateTimeOffset.Parse("2024-01-01T00:00:00Z")
                 }
-            }
+            ]
         };
 
         // Act
