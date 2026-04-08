@@ -93,6 +93,57 @@ var track = new Track()
 await userDataClient.Track(track, CancellationToken.None);
 ```
 
+## Ecommerce Events (Beta)
+
+> ⚠️ **Beta**: Ecommerce event support is currently in beta. Only `OrderPlacedEvent` has been tested end-to-end against the Braze API. Other events are implemented according to the [Braze ecommerce events specification](https://www.braze.com/docs/user_guide/data/activation/custom_data/recommended_events/ecommerce_events) but may contain issues.
+
+The following [recommended ecommerce events](https://www.braze.com/docs/user_guide/data/activation/custom_data/recommended_events/ecommerce_events) are supported via strongly typed classes in the `Braze.Api.UserData.ECommerce` namespace:
+
+| Event class             | Braze event name                   | Tested end-to-end |
+|-------------------------|------------------------------------|:-----------------:|
+| `ProductViewedEvent`    | `ecommerce.product_viewed`         |                   |
+| `CartUpdatedEvent`      | `ecommerce.cart_updated`           |                   |
+| `CheckoutStartedEvent`  | `ecommerce.checkout_started`       |                   |
+| `OrderPlacedEvent`      | `ecommerce.order_placed`           | ✅                |
+| `OrderRefundedEvent`    | `ecommerce.order_refunded`         |                   |
+| `OrderCancelledEvent`   | `ecommerce.order_cancelled`        |                   |
+
+Usage example:
+
+```cs
+var track = new Track()
+{
+    Events =
+    [
+        new OrderPlacedEvent()
+        {
+            ExternalId = "user-123",
+            Time = DateTimeOffset.UtcNow,
+            Properties = new OrderPlacedProperties
+            {
+                OrderId = "order-456",
+                TotalValue = 99.99m,
+                Currency = "USD",
+                Source = "storefront",
+                Products =
+                [
+                    new Product
+                    {
+                        ProductId = "prod-789",
+                        ProductName = "T-Shirt",
+                        VariantId = "tshirt_medium_blue",
+                        Quantity = 1,
+                        Price = 99.99m,
+                    }
+                ],
+            },
+        }
+    ],
+};
+
+await userDataClient.Track(track, CancellationToken.None);
+```
+
 ## Development
 
 The clients implemented in this package tries to replicate the logical structure in the [Braze API documentation](https://www.braze.com/docs/api/basics#braze-rest-api-collection).
